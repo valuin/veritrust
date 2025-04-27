@@ -21,10 +21,10 @@ const footerLinks = {
 
 export function Footer() {
   return (
-    <footer className="mt-16 bg-[#0039c7] pt-[75px] pb-[30px] px-[168px]">
-      <div className="flex justify-between">
+    <footer className="mt-16 bg-[#0039c7] pt-12 pb-8 px-4 md:px-[80px] lg:px-[168px]">
+      <div className="flex flex-col md:flex-row md:justify-between gap-8">
         <div>
-          <div className="font-semibold text-white text-2xl mb-6 font-['Geist',Helvetica]">
+          <div className="font-semibold text-white text-xl md:text-2xl mb-4 md:mb-6 font-['Geist',Helvetica]">
             Useful Links
           </div>
           <ul>
@@ -39,7 +39,7 @@ export function Footer() {
           </ul>
         </div>
         <div>
-          <div className="font-semibold text-white text-2xl mb-6 font-['Geist',Helvetica]">
+          <div className="font-semibold text-white text-xl md:text-2xl mb-4 md:mb-6 font-['Geist',Helvetica]">
             Community
           </div>
           <ul>
@@ -54,7 +54,7 @@ export function Footer() {
           </ul>
         </div>
         <div>
-          <div className="font-semibold text-white text-2xl mb-6 font-['Geist',Helvetica]">
+          <div className="font-semibold text-white text-xl md:text-2xl mb-4 md:mb-6 font-['Geist',Helvetica]">
             Partner
           </div>
           <ul>
@@ -70,9 +70,9 @@ export function Footer() {
         </div>
       </div>
       <Separator className="my-8 bg-white/30" />
-      <div className="flex justify-between items-center">
-        <div className="flex items-center">
-          <span className="font-normal text-[#ffffff99] text-lg text-center leading-[27px] font-['Abel',Helvetica]">
+      <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+        <div className="flex items-center flex-wrap gap-2">
+          <span className="font-normal text-[#ffffff99] text-base md:text-lg text-center leading-[27px] font-['Abel',Helvetica]">
             Copyright
           </span>
           <img
@@ -80,11 +80,11 @@ export function Footer() {
             alt="Copyright"
             src="/copyright-1.svg"
           />
-          <span className="font-normal text-[#ffffff99] text-lg text-center leading-[27px] font-['Geist',Helvetica]">
+          <span className="font-normal text-[#ffffff99] text-base md:text-lg text-center leading-[27px] font-['Geist',Helvetica]">
             2025 VeriTrust. All Rights Reserved.
           </span>
         </div>
-        <div className="flex space-x-6">
+        <div className="flex space-x-4 md:space-x-6">
           <img
             className="w-[22px] h-[22px]"
             alt="Social"

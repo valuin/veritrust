@@ -11,39 +11,55 @@ const navLinks: string[] = [
 
 export function Header() {
   return (
-    <header className="flex justify-between items-center px-16 py-10">
+    <header className="flex flex-col lg:flex-row lg:justify-between lg:items-center px-4 lg:px-16 py-6 md:py-10 gap-4 md:gap-0">
       <div className="flex items-center">
-        <img
-          className="w-10 h-[29px]"
-          alt="VeriTrust Logo"
-          src="/group-1.png"
-        />
-        <div className="ml-3 font-semibold text-[#2b2b2b] text-2xl tracking-[0] leading-[normal] font-['Geist',Helvetica]">
+        <div className="hidden lg:block">
+          <img
+            className="w-10 h-[29px]"
+            alt="VeriTrust Logo"
+            src="/group-1.png"
+          />
+        </div>
+        <div className="hidden xl:flex ml-3 font-semibold text-[#2b2b2b] text-2xl tracking-[0] leading-[normal] font-['Geist',Helvetica]">
           VeriTrust
         </div>
       </div>
-      <nav className="flex space-x-8">
+      <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-6 w-full md:w-auto">
+        <nav className="hidden md:flex space-x-4">
+          {navLinks.map((link, index) => (
+            <Button
+              key={index}
+              variant="link"
+              className="font-['Geist',Helvetica] font-medium text-black text-base"
+            >
+              {link}
+            </Button>
+          ))}
+        </nav>
+        <div className="flex flex-col md:flex-row gap-2 md:gap-4 w-full md:w-auto">
+          <Button className="h-9 md:h-10 w-full md:w-32 bg-[#0039c7] rounded-[8px] font-['Geist',Helvetica] font-semibold text-white text-base md:text-lg">
+            Sign Up
+          </Button>
+          <Button
+            variant="outline"
+            className="h-9 md:h-10 w-full md:w-32 rounded-[8px] border-2 border-[#0039c7] font-['Geist',Helvetica] font-semibold text-[#0039c7] text-base md:text-lg"
+          >
+            Log in
+          </Button>
+        </div>
+      </div>
+      {/* Mobile nav */}
+      <nav className="flex md:hidden flex-wrap gap-2 mt-2">
         {navLinks.map((link, index) => (
           <Button
             key={index}
             variant="link"
-            className="font-['Geist',Helvetica] font-medium text-black text-base"
+            className="font-['Geist',Helvetica] font-medium text-black text-base px-2"
           >
             {link}
           </Button>
         ))}
       </nav>
-      <div className="flex space-x-4">
-        <Button className="h-[50px] w-[173px] bg-[#0039c7] rounded-[10px] font-['Geist',Helvetica] font-semibold text-white text-2xl">
-          Sign Up
-        </Button>
-        <Button
-          variant="outline"
-          className="h-[50px] w-[173px] rounded-[10px] border-2 border-[#0039c7] font-['Geist',Helvetica] font-semibold text-[#0039c7] text-2xl"
-        >
-          Log in
-        </Button>
-      </div>
     </header>
   );
 }

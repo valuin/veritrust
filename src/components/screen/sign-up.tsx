@@ -1,5 +1,5 @@
 "use client"
-import React, { JSX } from "react";
+import React from "react";
 import { Button } from "../../components/ui/button";
 import { Card } from "../../components/ui/card";
 import { Checkbox } from "../../components/ui/checkbox";

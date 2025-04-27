@@ -88,7 +88,7 @@ export default function SignIn() {
 
                   {/* Sign in button */}
                   <Button className="w-full h-12 bg-[#0039c7] rounded-[10px] font-bold text-lg">
-                    Sign In
+                    Login
                   </Button>
 
                   {/* Sign in with Google */}
@@ -101,7 +101,7 @@ export default function SignIn() {
                       alt="Google"
                       className="w-8 h-8 mr-3 object-cover"
                     />
-                    Sign In With Google
+                    Login With Google
                   </Button>
                 </div>
               </div>

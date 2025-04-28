@@ -1,5 +1,7 @@
+"use client";
 import React from "react";
 import { Button } from "./button";
+import { useRouter } from "next/navigation";
 
 const navLinks: string[] = [
   "Problem",
@@ -10,8 +12,9 @@ const navLinks: string[] = [
 ];
 
 export function Header() {
+  const router = useRouter();
   return (
-    <header className="flex flex-col lg:flex-row lg:justify-between lg:items-center px-4 lg:px-16 py-6 md:py-10 gap-4 md:gap-0">
+    <header className="flex bg-white flex-col lg:flex-row lg:justify-between lg:items-center px-4 lg:px-16 py-6 md:py-10 gap-4 md:gap-0">
       <div className="flex items-center">
         <div className="hidden lg:block">
           <img
@@ -37,12 +40,16 @@ export function Header() {
           ))}
         </nav>
         <div className="flex flex-col md:flex-row gap-2 md:gap-4 w-full md:w-auto">
-          <Button className="h-9 md:h-10 w-full md:w-32 bg-[#0039c7] rounded-[8px] font-['Geist',Helvetica] font-semibold text-white text-base md:text-lg">
+          <Button
+            className="h-9 md:h-10 w-full cursor-pointer md:w-32 bg-[#0039c7] rounded-[8px] font-['Geist',Helvetica] font-semibold text-white text-base md:text-lg"
+            onClick={() => router.push("/sign-up")}
+          >
             Sign Up
           </Button>
           <Button
             variant="outline"
-            className="h-9 md:h-10 w-full md:w-32 rounded-[8px] border-2 border-[#0039c7] font-['Geist',Helvetica] font-semibold text-[#0039c7] text-base md:text-lg"
+            onClick={() => router.push("/login")}
+            className="h-9 md:h-10 w-full cursor-pointer md:w-32 rounded-[8px] border-2 border-[#0039c7] font-['Geist',Helvetica] font-semibold text-[#0039c7] text-base md:text-lg"
           >
             Log in
           </Button>

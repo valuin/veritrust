@@ -36,8 +36,8 @@ function SetupSidebar({
         onStepClick={onStepClick}
       />
       <div className="mt-auto mb-2 flex items-center gap-2">
-        <ChevronLeft className="w-4 h-4 text-blue-600" />
-        <a href={backToLoginUrl} className="text-blue-600 underline text-sm">
+        <ChevronLeft className="w-4 h-4 text-white" />
+        <a href={backToLoginUrl} className="text-white underline text-sm">
           Back to login
         </a>
       </div>

@@ -1,10 +1,10 @@
 import React from "react";
-import { Button } from "../../components/ui/button";
-import { Card, CardContent } from "../../components/ui/card";
-import { Checkbox } from "../../components/ui/checkbox";
-import { Input } from "../../components/ui/input";
+import { Button } from "../ui/button";
+import { Card, CardContent } from "../ui/card";
+import { Checkbox } from "../ui/checkbox";
+import { Input } from "../ui/input";
 
-export default function SignIn() {
+export default function Login() {
   // Data for form fields
   const formData = {
     title: "Welcome To Veritrust",

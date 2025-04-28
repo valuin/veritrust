@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import React from "react";
 import { Button } from "../../components/ui/button";
 import { Card } from "../../components/ui/card";
@@ -137,8 +137,11 @@ export default function SignUp() {
 
         {/* Submit button */}
         <div className="mt-8">
-          <Button className="w-full h-12 bg-[#0039c7] rounded-[10px] text-white text-lg font-bold">
-            Process To Next Step
+          <Button
+            asChild
+            className="w-full h-12 bg-[#0039c7] rounded-[10px] text-white text-lg font-bold"
+          >
+            <a href="/onboarding">Process To Next Step</a>
           </Button>
         </div>
       </div>

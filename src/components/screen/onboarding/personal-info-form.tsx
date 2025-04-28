@@ -1,7 +1,15 @@
+"use client"
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem
+} from "@/components/ui/select";
 import { FileUpload } from "./file-upload";
 import { CategorySelector } from "./category-selector";
 import { Plus, Info } from "lucide-react";
@@ -72,12 +80,18 @@ export default function PersonalInfoFormContainer({
           <Input placeholder="Jobs" />
           <Input placeholder="Email" type="email" />
           <Input placeholder="Phone" type="tel" />
-          <Input placeholder="Password" type="password" />
+          <Select>
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Select gender" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="male">Male</SelectItem>
+              <SelectItem value="female">Female</SelectItem>
+              <SelectItem value="other">Other</SelectItem>
+            </SelectContent>
+          </Select>
           <div className="flex flex-col gap-1">
             <Input placeholder="Family" />
-            <div className="border-2 border-dashed border-gray-300 rounded px-2 py-1 text-xs text-gray-500 mt-1">
-              Upload proof of family member
-            </div>
           </div>
         </div>
       </section>

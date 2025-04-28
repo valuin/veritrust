@@ -42,13 +42,13 @@ export function Header() {
         <div className="flex flex-col md:flex-row gap-2 md:gap-4 w-full md:w-auto">
           <Button
             className="h-9 md:h-10 w-full cursor-pointer md:w-32 bg-[#0039c7] rounded-[8px] font-['Geist',Helvetica] font-semibold text-white text-base md:text-lg"
-            onClick={() => router.push("/sign-up")}
+            onClick={() => router.push("/landing/sign-up")}
           >
             Sign Up
           </Button>
           <Button
             variant="outline"
-            onClick={() => router.push("/login")}
+            onClick={() => router.push("/landing/login")}
             className="h-9 md:h-10 w-full cursor-pointer md:w-32 rounded-[8px] border-2 border-[#0039c7] font-['Geist',Helvetica] font-semibold text-[#0039c7] text-base md:text-lg"
           >
             Log in

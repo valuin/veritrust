@@ -141,7 +141,7 @@ export default function SignUp() {
             asChild
             className="w-full h-12 bg-[#0039c7] rounded-[10px] text-white text-lg font-bold"
           >
-            <a href="/onboarding">Process To Next Step</a>
+            <a href="/landing/onboarding">Process To Next Step</a>
           </Button>
         </div>
       </div>

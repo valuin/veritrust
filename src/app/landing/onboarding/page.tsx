@@ -6,6 +6,7 @@ import { EmailVerificationForm } from "@/components/screen/onboarding/email-veri
 import { Button } from "@/components/ui/button";
 import PersonalInfoFormContainer from "@/components/screen/onboarding/personal-info-form";
 import { ChevronLeft } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 const onboardingSteps = [
   "Set up your account",
@@ -47,13 +48,18 @@ function SetupSidebar({
 
 export default function AddPersonalInfoPage() {
   const [activeStep, setActiveStep] = useState(1);
+  const router = useRouter();
 
   const handleSave = () => {
     alert("Saved!");
   };
 
   const handleNext = () => {
-    setActiveStep((prev) => Math.min(prev + 1, onboardingSteps.length - 1));
+    if (activeStep === onboardingSteps.length - 1) {
+      router.push("/dashboard");
+    } else {
+      setActiveStep((prev) => Math.min(prev + 1, onboardingSteps.length - 1));
+    }
   };
 
   const handlePrev = () => {
@@ -75,7 +81,10 @@ export default function AddPersonalInfoPage() {
           {activeStep === 1 ? (
             <EmailVerificationForm />
           ) : activeStep === 2 ? (
-            <PersonalInfoFormContainer onSave={handleSave} onNext={handleNext} />
+            <PersonalInfoFormContainer
+              onSave={handleSave}
+              onNext={handleNext}
+            />
           ) : (
             <div className="text-center">
               <h2 className="text-2xl font-bold mb-4">

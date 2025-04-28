@@ -1,50 +1,64 @@
 "use client";
 
-import React, { useId, useState } from "react";
 import { ChevronDownIcon, PhoneIcon } from "lucide-react";
+import React, { useId } from "react";
 import * as RPNInput from "react-phone-number-input";
 import flags from "react-phone-number-input/flags";
 
-import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { cn } from "@/lib/utils";
 
-export default function PhoneInputComponent() {
+interface PhoneInputProps
+  extends Omit<
+    React.InputHTMLAttributes<HTMLInputElement>,
+    "onChange" | "value"
+  > {
+  value: RPNInput.Value | undefined;
+  onChange: (value: RPNInput.Value | undefined) => void;
+}
+
+export default function PhoneInputComponent({
+  value,
+  onChange,
+  ...props
+}: PhoneInputProps) {
   const id = useId();
-  const [value, setValue] = useState("");
 
   return (
-    <div className="*:not-first:mt-2" dir="ltr">
-      <Label htmlFor={id}>Phone number input</Label>
-      <RPNInput.default
-        className="flex rounded-md shadow-xs"
-        international
-        flagComponent={FlagComponent}
-        countrySelectComponent={CountrySelect}
-        inputComponent={PhoneInput}
-        id={id}
-        placeholder="Enter phone number"
-        value={value}
-        onChange={(newValue) => setValue(newValue ?? "")}
-      />
-    </div>
+    <RPNInput.default
+      className="flex rounded-md shadow-xs border border-input"
+      international
+      withCountryCallingCode
+      flagComponent={FlagComponent}
+      countrySelectComponent={CountrySelect}
+      inputComponent={CustomPhoneInput}
+      id={id}
+      placeholder="Enter phone number"
+      value={value}
+      onChange={onChange}
+      {...props}
+    />
   );
 }
 
-const PhoneInput = ({ className, ...props }: React.ComponentProps<"input">) => {
+const CustomPhoneInput = React.forwardRef<
+  HTMLInputElement,
+  React.ComponentProps<"input">
+>(({ className, ...props }, ref) => {
   return (
     <Input
+      ref={ref}
       data-slot="phone-input"
       className={cn(
-        "-ms-px rounded-s-none shadow-none focus-visible:z-10",
+        "-ms-px rounded-s-none shadow-none focus-visible:z-10 h-10",
         className
       )}
       {...props}
     />
   );
-};
+});
 
-PhoneInput.displayName = "PhoneInput";
+CustomPhoneInput.displayName = "CustomPhoneInput";
 
 type CountrySelectProps = {
   disabled?: boolean;

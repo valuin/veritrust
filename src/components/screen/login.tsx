@@ -1,4 +1,7 @@
-import React from "react";
+"use client";
+
+import { useRouter } from "next/navigation";
+import React, { useState } from "react";
 import { Button } from "../ui/button";
 import { Card, CardContent } from "../ui/card";
 import { Checkbox } from "../ui/checkbox";
@@ -12,6 +15,46 @@ export default function Login() {
       "At Veritrust, We Believe That Access To Social Aid Should Be simple, Secure, And Inclusive For Everyone.",
     missionStatement:
       "We Help People In Need, Whether In War Zones, Or Places Where People Without Support Struggle To Break The Vicious Cycle Of Poverty.",
+  };
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    setIsLoading(true);
+
+    try {
+      const response = await fetch("/api/auth/sign-in", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        router.push("/dashboard");
+      } else {
+        // Tangani error dari backend
+        const errorMessage =
+          data.message ||
+          data.error ||
+          "Login gagal. Silakan cek email dan password Anda.";
+        setError(errorMessage);
+      }
+    } catch (err) {
+      console.error("Login error:", err);
+      setError("Terjadi kesalahan saat login. Silakan coba lagi.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -41,6 +84,7 @@ export default function Login() {
                       Email
                     </label>
                     <Input
+                      onChange={(e) => setEmail(e.target.value)}
                       id="email"
                       placeholder="Enter Your Email"
                       className="h-10 rounded-[5px] border-[#d2d2d2] placeholder:text-[#d2d2d2] placeholder:text-xs"
@@ -57,6 +101,7 @@ export default function Login() {
                     </label>
                     <div className="relative">
                       <Input
+                        onChange={(e) => setPassword(e.target.value)}
                         id="password"
                         type="password"
                         className="h-10 rounded-[5px] border-[#d2d2d2]"
@@ -79,7 +124,7 @@ export default function Login() {
                       </label>
                     </div>
                     <a
-                      href="#"
+                      href="/auth/forgot-password"
                       className="font-semibold text-xs text-[#0039c7] leading-[18px]"
                     >
                       Forgot Password
@@ -87,9 +132,20 @@ export default function Login() {
                   </div>
 
                   {/* Sign in button */}
-                  <Button className="w-full h-12 bg-[#0039c7] rounded-[10px] font-bold text-lg">
-                    Login
+                  <Button
+                    onClick={handleLogin}
+                    className="w-full h-12 bg-[#0039c7] rounded-[10px] font-bold text-lg"
+                    disabled={isLoading}
+                  >
+                    {isLoading ? "Sedang login..." : "Login"}
                   </Button>
+
+                  {/* Error message */}
+                  {error && (
+                    <div className="p-3 bg-red-50 border border-red-200 rounded-md text-red-600 text-sm">
+                      {error}
+                    </div>
+                  )}
 
                   {/* Sign in with Google */}
                   <Button

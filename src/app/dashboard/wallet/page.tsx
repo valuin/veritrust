@@ -247,8 +247,6 @@ export default function WalletPage() {
         {/* Action Buttons */}
       </div>
 
-      {/* Wallet Cards and Status Section */}
-
       {/* Activity and History Tabs */}
       <Tabs defaultValue="activity" className="w-full">
         <div className="flex justify-between items-center mb-4">
@@ -278,138 +276,84 @@ export default function WalletPage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  <TableRow>
-                    <TableCell className="font-medium">
-                      <div className="flex items-center gap-3">
-                        <div className="h-8 w-8 rounded-full bg-blue-500 flex items-center justify-center overflow-hidden">
-                          <Image
-                            src="/placeholder.svg?height=32&width=32"
-                            alt="UNHCR"
-                            width={32}
-                            height={32}
-                            className="rounded-full"
-                          />
+                  {[
+                    {
+                      id: "1",
+                      color: "bg-blue-500",
+                      program: "Rohingya Social Aid Program",
+                      amount: "$51",
+                      status: { label: "Approved", color: "bg-green-100 text-green-800 border-green-200" },
+                      date: "20 Aug 2025",
+                      img: "https://placehold.co/32x32",
+                    },
+                    {
+                      id: "2",
+                      color: "bg-green-500",
+                      program: "Cash Assistance for Refugees",
+                      amount: "$45",
+                      status: { label: "On Progress", color: "bg-amber-100 text-amber-800 border-amber-200" },
+                      date: "29 Jul 2025",
+                      img: "https://placehold.co/32x32",
+                    },
+                    {
+                      id: "3",
+                      color: "bg-yellow-500",
+                      program: "Livelihood help for Refugee",
+                      amount: "$39",
+                      status: { label: "Declined", color: "bg-red-100 text-red-800 border-red-200" },
+                      date: "05 Jul 2025",
+                      img: "https://placehold.co/32x32",
+                    },
+                    {
+                      id: "4",
+                      color: "bg-blue-500",
+                      program: "Safe Shelters for Refugees",
+                      amount: "$26",
+                      status: { label: "On Progress", color: "bg-amber-100 text-amber-800 border-amber-200" },
+                      date: "12 Jun 2025",
+                      img: "https://placehold.co/32x32",
+                    },
+                  ].map((row) => (
+                    <tr
+                      key={row.id}
+                      className="cursor-pointer hover:bg-gray-50 transition"
+                    >
+                      <td className="font-medium">
+                        <div className="flex items-center gap-3">
+                          <div className={`h-8 w-8 rounded-full ${row.color} flex items-center justify-center overflow-hidden`}>
+                            <Image
+                              src={row.img}
+                              alt={row.program}
+                              width={32}
+                              height={32}
+                              className="rounded-full"
+                            />
+                          </div>
+                          <span>{row.program}</span>
                         </div>
-                        <span>Rohingya Social Aid Program</span>
-                      </div>
-                    </TableCell>
-                    <TableCell className="font-bold text-blue-600">
-                      $51 <span className="text-xs font-normal">CHEQ</span>
-                    </TableCell>
-                    <TableCell>
-                      <Badge
-                        variant="outline"
-                        className="bg-green-100 text-green-800 border-green-200"
-                      >
-                        Approved
-                      </Badge>
-                    </TableCell>
-                    <TableCell>20 Aug 2025</TableCell>
-                    <TableCell>
-                      <Button variant="link" className="p-0 h-auto">
-                        Click Here
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell className="font-medium">
-                      <div className="flex items-center gap-3">
-                        <div className="h-8 w-8 rounded-full bg-green-500 flex items-center justify-center overflow-hidden">
-                          <Image
-                            src="/placeholder.svg?height=32&width=32"
-                            alt="Cash Assistance"
-                            width={32}
-                            height={32}
-                            className="rounded-full"
-                          />
-                        </div>
-                        <span>Cash Assistance for Refugees</span>
-                      </div>
-                    </TableCell>
-                    <TableCell className="font-bold text-blue-600">
-                      $45 <span className="text-xs font-normal">CHEQ</span>
-                    </TableCell>
-                    <TableCell>
-                      <Badge
-                        variant="outline"
-                        className="bg-amber-100 text-amber-800 border-amber-200"
-                      >
-                        On Progress
-                      </Badge>
-                    </TableCell>
-                    <TableCell>29 Jul 2025</TableCell>
-                    <TableCell>
-                      <Button variant="link" className="p-0 h-auto">
-                        Click Here
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell className="font-medium">
-                      <div className="flex items-center gap-3">
-                        <div className="h-8 w-8 rounded-full bg-yellow-500 flex items-center justify-center overflow-hidden">
-                          <Image
-                            src="/placeholder.svg?height=32&width=32"
-                            alt="Livelihood"
-                            width={32}
-                            height={32}
-                            className="rounded-full"
-                          />
-                        </div>
-                        <span>Livelihood help for Refugee</span>
-                      </div>
-                    </TableCell>
-                    <TableCell className="font-bold text-blue-600">
-                      $39 <span className="text-xs font-normal">CHEQ</span>
-                    </TableCell>
-                    <TableCell>
-                      <Badge
-                        variant="outline"
-                        className="bg-red-100 text-red-800 border-red-200"
-                      >
-                        Declined
-                      </Badge>
-                    </TableCell>
-                    <TableCell>05 Jul 2025</TableCell>
-                    <TableCell>
-                      <Button variant="link" className="p-0 h-auto">
-                        Click Here
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell className="font-medium">
-                      <div className="flex items-center gap-3">
-                        <div className="h-8 w-8 rounded-full bg-blue-500 flex items-center justify-center overflow-hidden">
-                          <Image
-                            src="/placeholder.svg?height=32&width=32"
-                            alt="UNHCR"
-                            width={32}
-                            height={32}
-                            className="rounded-full"
-                          />
-                        </div>
-                        <span>Safe Shelters for Refugees</span>
-                      </div>
-                    </TableCell>
-                    <TableCell className="font-bold text-blue-600">
-                      $26 <span className="text-xs font-normal">CHEQ</span>
-                    </TableCell>
-                    <TableCell>
-                      <Badge
-                        variant="outline"
-                        className="bg-amber-100 text-amber-800 border-amber-200"
-                      >
-                        On Progress
-                      </Badge>
-                    </TableCell>
-                    <TableCell>12 Jun 2025</TableCell>
-                    <TableCell>
-                      <Button variant="link" className="p-0 h-auto">
-                        Click Here
-                      </Button>
-                    </TableCell>
-                  </TableRow>
+                      </td>
+                      <td className="font-bold text-blue-600">
+                        {row.amount} <span className="text-xs font-normal">CHEQ</span>
+                      </td>
+                      <td>
+                        <Badge
+                          variant="outline"
+                          className={row.status.color}
+                        >
+                          {row.status.label}
+                        </Badge>
+                      </td>
+                      <td>{row.date}</td>
+                      <td>
+                        <a
+                          href={`/dashboard/wallet/${row.id}`}
+                          className="text-blue-600 underline hover:text-blue-800"
+                        >
+                          Click Here
+                        </a>
+                      </td>
+                    </tr>
+                  ))}
                 </TableBody>
               </Table>
             </CardContent>

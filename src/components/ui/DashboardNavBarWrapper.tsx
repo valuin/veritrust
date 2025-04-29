@@ -15,7 +15,7 @@ const iconMap = {
 
 const navItems = [
   { name: "Find Aid", url: "/dashboard", icon: "Search" },
-  { name: "Saved Aid", url: "#", icon: "Bookmark" },
+  { name: "Saved Aid", url: "/dashboard/saved-aid", icon: "Bookmark" },
   { name: "News", url: "#", icon: "Newspaper" },
   { name: "Testimonial", url: "#", icon: "MessageCircle" },
   { name: "Contact", url: "#", icon: "Phone" },

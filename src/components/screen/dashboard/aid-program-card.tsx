@@ -4,6 +4,7 @@ import { ArrowUpRight } from "lucide-react";
 import { BookmarkOutline, Bookmark } from "@/components/icons/bookmark";
 import { cn } from "@/lib/utils";
 import { useSavedAidsStore } from "@/store/savedAids";
+import AidProgramDetailDialog from "./aid-program-detail-dialog";
 
 
 interface AidProgram {
@@ -31,6 +32,11 @@ const AidProgramCard: React.FC<AidProgramCardProps> = ({ program }) => {
     } else {
       add(program.program_id);
     }
+  };
+
+  const handleApply = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    // Add apply logic here
   };
 
   return (
@@ -90,7 +96,10 @@ const AidProgramCard: React.FC<AidProgramCardProps> = ({ program }) => {
               ${program.nominal.toLocaleString()}
             </span>
           )}
-          <button className="bg-[#0039c7] text-white px-4 py-2 rounded-lg hover:bg-[#002080] transition">
+          <button
+            className="bg-[#0039c7] text-white px-4 py-2 rounded-lg hover:bg-[#002080] transition"
+            onClick={handleApply}
+          >
             Apply
           </button>
         </div>
@@ -99,4 +108,17 @@ const AidProgramCard: React.FC<AidProgramCardProps> = ({ program }) => {
   );
 };
 
-export default AidProgramCard;
+import { Dialog, DialogTrigger } from "@/components/ui/dialog";
+
+const CardWithDialog: React.FC<AidProgramCardProps> = (props) => (
+  <Dialog>
+    <DialogTrigger asChild>
+      <div tabIndex={0} className="outline-none focus:ring-2 focus:ring-primary rounded-2xl" style={{ cursor: "pointer" }}>
+        <AidProgramCard {...props} />
+      </div>
+    </DialogTrigger>
+    <AidProgramDetailDialog program={props.program} />
+  </Dialog>
+);
+
+export default CardWithDialog;

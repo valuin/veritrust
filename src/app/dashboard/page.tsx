@@ -30,7 +30,7 @@ export default function DashboardPage() {
         const { data, error: dataError } = await supabase
           .from("aid_programs")
           .select(
-            "program_id, name, description, created_at, required_tags, nominal"
+            "program_id, name, description, created_at, required_tags, nominal, about, details, eligibility, how_to_apply"
           );
 
         if (dataError) throw dataError;

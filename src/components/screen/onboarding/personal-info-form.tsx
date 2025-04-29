@@ -26,7 +26,7 @@ interface InitialOnboardingData {
   password?: string;
 }
 
-export default function PersonalInfoFormContainer({}: {}) {
+export default function PersonalInfoFormContainer(props: object) {
   const supabase = createClient();
   const router = useRouter();
 

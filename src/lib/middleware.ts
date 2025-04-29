@@ -41,13 +41,6 @@ export const updateSession = async (request: NextRequest, env?: Env) => {
 
     const user = await supabase.auth.getUser();
 
-    if (
-      request.nextUrl.pathname.startsWith("/dashboard") ||
-      (request.nextUrl.pathname === "/landing/onboarding" && user.error)
-    ) {
-      return NextResponse.redirect(new URL("/landing/login", request.url));
-    }
-
     if (request.nextUrl.pathname === "/") {
       if (!user || user.error) {
         return response;

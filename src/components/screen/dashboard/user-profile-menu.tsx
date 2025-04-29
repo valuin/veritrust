@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { MapPin, Bell, LayoutGrid, LogOut, X } from "lucide-react";
+import { MapPin, Bell, LogOut, X, Wallet } from "lucide-react";
 import { createClient } from "@/lib/client"; // Gunakan client Supabase
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button"; // Import Button
@@ -55,7 +55,7 @@ export default function UserProfileMenu({ userProfile }: UserProfileMenuProps) {
         </div>
         {/* Grid Icon */}
         <button className="w-10 h-10 rounded-full border-2 border-white flex items-center justify-center hover:bg-white/20 transition-colors">
-          <LayoutGrid className="w-5 h-5" />
+          <Wallet className="w-5 h-5" />
         </button>
         {/* Bell Icon */}
         <button className="w-10 h-10 rounded-full border-2 border-white flex items-center justify-center hover:bg-white/20 transition-colors">
@@ -65,7 +65,7 @@ export default function UserProfileMenu({ userProfile }: UserProfileMenuProps) {
         <div className="w-10 h-10 rounded-full border-2 border-white flex items-center justify-center overflow-hidden">
           {/* Ganti dengan logika bendera negara jika ada */}
           <Image
-            src="/placeholder.svg?height=24&width=24"
+            src="https://flagsapi.com/MM/flat/64.png"
             alt="Flag"
             width={24}
             height={24}

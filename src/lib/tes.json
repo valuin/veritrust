@@ -1,0 +1,40 @@
+{
+    "credential": {
+      "credentialSubject": {
+          "gender": "male",
+          "name": "rizkir",
+          "umur": 19,
+          "penghasilan": "2000000/bulan",
+          "request_bansos": 4,
+          "id": "did:cheqd:testnet:61c2dfa4-f8b0-4f57-9ddc-053d52eab22c"
+      },
+      "issuer": {
+          "id": "did:cheqd:testnet:beeb479d-b490-4b81-b3bb-14b723424542"
+      },
+      "type": [
+          "VerifiableCredential",
+          "Person"
+      ],
+      "credentialStatus": {
+          "id": "https://resolver.cheqd.net/1.0/identifiers/did:cheqd:testnet:beeb479d-b490-4b81-b3bb-14b723424542?resourceName=penerima-bansos-credentials-3&resourceType=StatusList2021Suspension#10",
+          "type": "StatusList2021Entry",
+          "statusPurpose": "suspension",
+          "statusListIndex": "10"
+      },
+      "@context": [
+          "https://www.w3.org/2018/credentials/v1",
+          "https://schema.org",
+          "https://w3id.org/vc-status-list-2021/v1"
+      ],
+      "issuanceDate": "2025-04-22T12:05:09.000Z",
+      "proof": {
+          "type": "JwtProof2020",
+          "jwt": "eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ9.eyJ2YyI6eyJAY29udGV4dCI6WyJodHRwczovL3d3dy53My5vcmcvMjAxOC9jcmVkZW50aWFscy92MSIsImh0dHBzOi8vc2NoZW1hLm9yZyIsImh0dHBzOi8vdzNpZC5vcmcvdmMtc3RhdHVzLWxpc3QtMjAyMS92MSJdLCJ0eXBlIjpbIlZlcmlmaWFibGVDcmVkZW50aWFsIiwiUGVyc29uIl0sImNyZWRlbnRpYWxTdWJqZWN0Ijp7ImdlbmRlciI6Im1hbGUiLCJuYW1lIjoicml6a2lyIiwidW11ciI6MTksInBlbmdoYXNpbGFuIjoiMjAwMDAwMC9idWxhbiIsInJlcXVlc3RfYmFuc29zIjo0fSwiY3JlZGVudGlhbFN0YXR1cyI6eyJpZCI6Imh0dHBzOi8vcmVzb2x2ZXIuY2hlcWQubmV0LzEuMC9pZGVudGlmaWVycy9kaWQ6Y2hlcWQ6dGVzdG5ldDpiZWViNDc5ZC1iNDkwLTRiODEtYjNiYi0xNGI3MjM0MjQ1NDI_cmVzb3VyY2VOYW1lPXBlbmVyaW1hLWJhbnNvcy1jcmVkZW50aWFscy0zJnJlc291cmNlVHlwZT1TdGF0dXNMaXN0MjAyMVN1c3BlbnNpb24jMTAiLCJ0eXBlIjoiU3RhdHVzTGlzdDIwMjFFbnRyeSIsInN0YXR1c1B1cnBvc2UiOiJzdXNwZW5zaW9uIiwic3RhdHVzTGlzdEluZGV4IjoiMTAifX0sInN1YiI6ImRpZDpjaGVxZDp0ZXN0bmV0OjYxYzJkZmE0LWY4YjAtNGY1Ny05ZGRjLTA1M2Q1MmVhYjIyYyIsIm5iZiI6MTc0NTMyMzUwOSwiaXNzIjoiZGlkOmNoZXFkOnRlc3RuZXQ6YmVlYjQ3OWQtYjQ5MC00YjgxLWIzYmItMTRiNzIzNDI0NTQyIn0.pcIDX3VKn8PN1KgIfwmE9PVCEe32k7cun7HoEr8esCtusil9F4mOsRNgijCCq3mQafBxFycU_9AdX6c6reIVAA"
+      }
+    }, 
+    "policies": {
+      "issuanceDate": true,
+      "expirationDate": true,
+      "audience": true
+    }
+  }

@@ -46,21 +46,37 @@ function SetupSidebar({
   );
 }
 
+import { Suspense } from "react";
+import { useSearchParams } from "next/navigation";
+
 export default function AddPersonalInfoPage() {
   const [activeStep, setActiveStep] = useState(1);
   const router = useRouter();
-  console.log("tes", activeStep);
+  // Wrap useSearchParams in Suspense boundary to fix Next.js warning
+  return (
+    <Suspense>
+      <AddPersonalInfoPageContent
+        activeStep={activeStep}
+        setActiveStep={setActiveStep}
+        router={router}
+      />
+    </Suspense>
+  );
+}
+
+function AddPersonalInfoPageContent({ activeStep, setActiveStep, router }: any) {
+  const searchParams = useSearchParams();
 
   const handleNext = () => {
     if (activeStep === onboardingSteps.length - 1) {
       router.push("/dashboard");
     } else {
-      setActiveStep((prev) => Math.min(prev + 1, onboardingSteps.length - 1));
+      setActiveStep((prev: number) => Math.min(prev + 1, onboardingSteps.length - 1));
     }
   };
 
   const handlePrev = () => {
-    setActiveStep((prev) => Math.max(prev - 1, 0));
+    setActiveStep((prev: number) => Math.max(prev - 1, 0));
   };
 
   return (

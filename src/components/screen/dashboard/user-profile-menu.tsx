@@ -6,6 +6,7 @@ import { MapPin, Bell, LogOut, X, Wallet } from "lucide-react";
 import { createClient } from "@/lib/client"; // Gunakan client Supabase
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button"; // Import Button
+import { Drawer } from "vaul";
 
 interface UserProfile {
   id: string;
@@ -54,13 +55,42 @@ export default function UserProfileMenu({ userProfile }: UserProfileMenuProps) {
                     */}
         </div>
         {/* Grid Icon */}
-        <button className="w-10 h-10 rounded-full border-2 border-white flex items-center justify-center hover:bg-white/20 transition-colors">
+        <a
+          href="/dashboard/wallet"
+          className="w-10 h-10 rounded-full border-2 border-white flex items-center justify-center hover:bg-white/20 transition-colors"
+        >
           <Wallet className="w-5 h-5" />
-        </button>
+        </a>
         {/* Bell Icon */}
-        <button className="w-10 h-10 rounded-full border-2 border-white flex items-center justify-center hover:bg-white/20 transition-colors">
-          <Bell className="w-5 h-5" />
-        </button>
+        <Drawer.Root direction="right">
+          <Drawer.Trigger asChild>
+            <button className="w-10 h-10 rounded-full border-2 border-white flex items-center justify-center hover:bg-white/20 transition-colors">
+              <Bell className="w-5 h-5" />
+            </button>
+          </Drawer.Trigger>
+          <Drawer.Portal>
+            <Drawer.Overlay className="fixed inset-0 bg-black/40" />
+            <Drawer.Content
+              className=" right-2 top-2 bottom-2 fixed z-100 outline-none w-[310px] flex"
+              style={
+                {
+                  "--initial-transform": "calc(100% + 8px)",
+                } as React.CSSProperties
+              }
+            >
+              <div className="bg-zinc-50 h-full w-full grow p-5 flex flex-col rounded-[16px]">
+                <div className="max-w-md mx-auto">
+                  <Drawer.Title className="font-medium mb-2 text-zinc-900">
+                    Notifications
+                  </Drawer.Title>
+                  <Drawer.Description className="text-zinc-600 mb-2">
+                    You have no new notifications.
+                  </Drawer.Description>
+                </div>
+              </div>
+            </Drawer.Content>
+          </Drawer.Portal>
+        </Drawer.Root>
         {/* Flag Icon */}
         <div className="w-10 h-10 rounded-full border-2 border-white flex items-center justify-center overflow-hidden">
           {/* Ganti dengan logika bendera negara jika ada */}

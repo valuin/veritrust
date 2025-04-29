@@ -1,8 +1,41 @@
-import Image from "next/image";
-import { MapPin, Bell, LayoutGrid } from "lucide-react";
+import UserProfileMenu from "@/components/layout/UserProfileMenu"; // Import komponen baru
+import { createClient } from "@/lib/server";
 import React from "react";
 
-export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+interface UserProfile {
+  id: string;
+  full_name?: string | null;
+  email?: string | null;
+  country?: string | null;
+}
+
+export default async function DashboardLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const supabase = await createClient();
+
+  let userProfile: UserProfile | null = null;
+
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+
+  if (session?.user) {
+    const { data, error } = await supabase
+      .from("users")
+      .select("id, full_name, email, country") // Select only needed fields
+      .eq("id", session.user.id)
+      .single(); // Expecting only one row
+
+    if (error && error.code !== "PGRST116") {
+      console.error("Error fetching user profile in layout:", error);
+    } else if (data) {
+      userProfile = data as UserProfile;
+    }
+  }
+
   return (
     <div className="min-h-screen bg-[#f9f9f9]">
       {/* Header */}
@@ -59,38 +92,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               </ul>
             </nav>
           </div>
-          <div className="flex items-center space-x-4">
-            <div className="flex items-center">
-              <MapPin className="w-5 h-5 mr-2" />
-              <span>Myanmar, MY</span>
-            </div>
-            <div className="flex items-center space-x-2">
-              <div className="w-10 h-10 rounded-full bg-[#d9d9d9] flex items-center justify-center overflow-hidden">
-                <Image
-                  src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/VeriTrust-yBZAO2AQekihzEE5IocLsdAaslToNM.png"
-                  alt="Profile"
-                  width={40}
-                  height={40}
-                  className="rounded-full object-cover"
-                />
-              </div>
-              <div className="w-10 h-10 rounded-full border-2 border-white flex items-center justify-center">
-                <LayoutGrid className="w-5 h-5" />
-              </div>
-              <div className="w-10 h-10 rounded-full border-2 border-white flex items-center justify-center">
-                <Bell className="w-5 h-5" />
-              </div>
-              <div className="w-10 h-10 rounded-full border-2 border-white flex items-center justify-center overflow-hidden">
-                <Image
-                  src="/placeholder.svg?height=24&width=24"
-                  alt="Flag"
-                  width={24}
-                  height={24}
-                  className="rounded-full"
-                />
-              </div>
-            </div>
-          </div>
+          {/* User Profile Menu Component */}
+          <UserProfileMenu userProfile={userProfile} />
         </div>
       </header>
       {children}

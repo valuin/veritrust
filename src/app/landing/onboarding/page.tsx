@@ -49,10 +49,7 @@ function SetupSidebar({
 export default function AddPersonalInfoPage() {
   const [activeStep, setActiveStep] = useState(1);
   const router = useRouter();
-
-  const handleSave = () => {
-    alert("Saved!");
-  };
+  console.log("tes", activeStep);
 
   const handleNext = () => {
     if (activeStep === onboardingSteps.length - 1) {
@@ -72,19 +69,16 @@ export default function AddPersonalInfoPage() {
         <SetupSidebar
           steps={onboardingSteps}
           activeStep={activeStep}
-          backToLoginUrl="/sign-in"
+          backToLoginUrl="/landing/login"
           onStepClick={setActiveStep}
         />
       </div>
       <main className="flex-1 flex items-center justify-center bg-white px-2 py-4 md:px-8 md:py-0">
         <div className="w-full max-w-2xl">
           {activeStep === 1 ? (
-            <EmailVerificationForm />
+            <EmailVerificationForm onVerificationSuccess={handleNext} />
           ) : activeStep === 2 ? (
-            <PersonalInfoFormContainer
-              onSave={handleSave}
-              onNext={handleNext}
-            />
+            <PersonalInfoFormContainer />
           ) : (
             <div className="text-center">
               <h2 className="text-2xl font-bold mb-4">
@@ -95,7 +89,7 @@ export default function AddPersonalInfoPage() {
                   Previous
                 </Button>
                 <Button onClick={handleNext} className="bg-blue-600 text-white">
-                  Next
+                  Go to Dashboard
                 </Button>
               </div>
             </div>

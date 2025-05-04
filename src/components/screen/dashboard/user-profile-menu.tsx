@@ -6,6 +6,7 @@ import { MapPin, Bell, LogOut, X, Wallet } from "lucide-react";
 import { createClient } from "@/lib/client"; // Gunakan client Supabase
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button"; // Import Button
+import Link from "next/link";
 import { Drawer } from "vaul";
 
 interface UserProfile {
@@ -55,12 +56,13 @@ export default function UserProfileMenu({ userProfile }: UserProfileMenuProps) {
                     */}
         </div>
         {/* Grid Icon */}
-        <a
+        <Link
           href="/dashboard/wallet"
           className="w-10 h-10 rounded-full border-2 border-white flex items-center justify-center hover:bg-white/20 transition-colors"
+          aria-label="Go to wallet"
         >
           <Wallet className="w-5 h-5" />
-        </a>
+        </Link>
         {/* Bell Icon */}
         <Drawer.Root direction="right">
           <Drawer.Trigger asChild>

@@ -1,6 +1,268 @@
 import { createClient } from "@/lib/server";
 import crypto from "crypto";
 import { NextResponse } from "next/server";
+import { User, VerifiableCredential } from "@/lib/type";
+
+async function analyzeDocumentsWithGemini(
+  profileData: any,
+  docUrls: { identity: string[]; income: string | null; additional: string[] }
+): Promise<string[]> {
+  const apiKey = process.env.NEXT_PUBLIC_GOOGLE_GEMINI_API_KEY;
+  if (!apiKey) {
+    console.error("Gemini API Key (NEXT_PUBLIC_GEMINI_API_KEY) is not set.");
+    return [];
+  }
+
+  const geminiModel = "gemini-2.0-flash";
+  const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${geminiModel}:generateContent?key=${apiKey}`;
+
+  console.log("Preparing data for Gemini Analysis...");
+  console.log("Profile Data (excluding password):", {
+    ...profileData,
+    password: "[REDACTED]",
+  });
+  console.log("Document URLs:", docUrls);
+
+  const userProfileText = `Analyze the following user profile and document contents to determine suitable social assistance tags (aid_tags).
+User Profile:
+- Full Name: ${profileData.full_name || "N/A"}
+- Job: ${profileData.job || "N/A"}
+- Phone: ${profileData.phone_number || "N/A"}
+- Family Size: ${profileData.family_number || "N/A"}
+- Gender: ${profileData.gender || "N/A"}
+- Location: ${profileData.address || "N/A"}, ${profileData.village || "N/A"}, ${profileData.regional || "N/A"}, ${profileData.country || "N/A"}
+- Background Story: ${profileData.background_story || "N/A"}
+- Declared Categories: ${Array.isArray(profileData.category) ? profileData.category.join(", ") : profileData.category || "N/A"}
+`;
+
+  const documentParts = [];
+
+  for (const url of docUrls.identity) {
+    documentParts.push({ text: `Identity Document: ${url}` });
+  }
+
+  if (docUrls.income) {
+    documentParts.push({ text: `Income Document: ${docUrls.income}` });
+  }
+
+  for (const url of docUrls.additional) {
+    documentParts.push({ text: `Additional Document: ${url}` });
+  }
+
+  const promptInstructions = `
+Task: Based *only* on the provided user profile text and the *content inferred* from the document URLs (treat them as containing relevant identity, income, or supporting information), identify relevant social assistance tags. Focus on needs implied by income level (if inferrable), family size, job status, location, background story, declared categories, and potential evidence in documents (like age, dependents, disability proofs etc.).
+
+Output Format: Respond ONLY with a JSON object containing a single key "aid_tags" whose value is an array of strings representing the suggested social assistance tags. Be concise and relevant. Example: {"aid_tags": ["low_income_support", "family_assistance", "unemployment_benefit"]}
+`;
+
+  const requestBody = {
+    contents: [
+      {
+        parts: [
+          { text: userProfileText },
+          ...documentParts,
+          { text: promptInstructions },
+        ],
+      },
+    ],
+    generationConfig: {
+      responseMimeType: "application/json",
+    },
+  };
+
+  try {
+    console.log("Calling Gemini API...");
+    const response = await fetch(apiUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(requestBody),
+    });
+
+    if (!response.ok) {
+      const errorBody = await response.text();
+      console.error(`Gemini API error (${response.status}): ${errorBody}`);
+      try {
+        const parsedError = JSON.parse(errorBody);
+        throw new Error(
+          `Gemini analysis failed (Status: ${response.status}): ${parsedError.error?.message || errorBody}`
+        );
+      } catch {
+        throw new Error(
+          `Gemini analysis failed (Status: ${response.status}): ${errorBody}`
+        );
+      }
+    }
+
+    const result = await response.json();
+    console.log("Gemini API Raw Response:", JSON.stringify(result));
+
+    const candidate = result.candidates?.[0];
+    const content = candidate?.content;
+    const part = content?.parts?.[0];
+    let aidTags: string[] = [];
+
+    if (part?.text) {
+      try {
+        const parsedJson = JSON.parse(part.text);
+        if (parsedJson.aid_tags && Array.isArray(parsedJson.aid_tags)) {
+          aidTags = parsedJson.aid_tags.filter(
+            (tag: any) => typeof tag === "string"
+          );
+          console.log("Extracted aid_tags from Gemini:", aidTags);
+        } else {
+          console.warn(
+            "Gemini response JSON does not contain a valid 'aid_tags' array.",
+            parsedJson
+          );
+        }
+      } catch (parseError) {
+        console.error("Failed to parse Gemini JSON response:", parseError);
+        console.error("Gemini raw text:", part.text);
+      }
+    } else {
+      console.warn(
+        "Could not find text part in Gemini response containing JSON.",
+        result
+      );
+    }
+
+    return aidTags;
+  } catch (error: any) {
+    console.error("Error calling Gemini or processing result:", error);
+    return [];
+  }
+}
+
+async function issueVerifiableCredential(
+  userDid: string,
+  userId: string,
+  profileData: any,
+  aidTags: string[]
+): Promise<{
+  success: boolean;
+  credentialData?: any;
+  uniqueTypes?: string[];
+  error?: string;
+}> {
+  const apiKey = process.env.NEXT_PUBLIC_CHEQD_API_KEY;
+  if (!apiKey) {
+    console.error(
+      "CHEQD_API_KEY environment variable is not set. Cannot issue VC."
+    );
+    return {
+      success: false,
+      error: "Configuration error: Cheqd API key missing.",
+    };
+  }
+
+  const apiUrl = "https://studio-api.cheqd.net/credential/issue";
+
+  const attributes: { [key: string]: any } = {};
+  const excludeKeys = [
+    "id",
+    "password",
+    "updated_at",
+    "cheqd_did",
+    "prove_of_identity",
+    "prove_of_income",
+    "additional_document",
+    "category",
+    "aid_tags",
+  ];
+  for (const key in profileData) {
+    if (
+      Object.prototype.hasOwnProperty.call(profileData, key) &&
+      !excludeKeys.includes(key)
+    ) {
+      const value = profileData[key];
+      if (value !== undefined && value !== null) {
+        attributes[key] = value;
+      }
+    }
+  }
+
+  const credentialTypes = ["Person"];
+  if (Array.isArray(profileData.category)) {
+    credentialTypes.push(
+      ...profileData.category.filter((c: any) => typeof c === "string")
+    );
+  } else if (
+    typeof profileData.category === "string" &&
+    profileData.category.trim() !== ""
+  ) {
+    credentialTypes.push(profileData.category);
+  }
+  if (Array.isArray(aidTags)) {
+    credentialTypes.push(...aidTags.filter((t: any) => typeof t === "string"));
+  }
+
+  const uniqueTypes = [...new Set(credentialTypes)];
+
+  const payload = {
+    issuerDid: userDid,
+    subjectDid: userDid,
+    attributes: attributes,
+    "@context": ["https://schema.org"],
+    type: uniqueTypes,
+    format: "jwt",
+    credentialStatus: {
+      statusPurpose: "suspension",
+      statusListName: `aid-receiver-${userId}`,
+      statusListIndex: 0,
+    },
+  };
+
+  console.log(
+    "Preparing Cheqd VC Issuance Payload:",
+    JSON.stringify(payload, null, 2)
+  );
+
+  try {
+    const response = await fetch(apiUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": apiKey,
+      },
+      body: JSON.stringify(payload),
+    });
+
+    let responseBody;
+    try {
+      responseBody = await response.json();
+    } catch (e) {
+      responseBody = await response.text();
+    }
+
+    if (!response.ok) {
+      console.error(
+        `Cheqd VC Issuance API error (${response.status}):`,
+        responseBody
+      );
+      const errorMessage =
+        typeof responseBody === "object"
+          ? responseBody.message ||
+            responseBody.error ||
+            JSON.stringify(responseBody)
+          : responseBody;
+      throw new Error(
+        `Failed to issue Cheqd VC (Status: ${response.status}): ${errorMessage}`
+      );
+    }
+
+    console.log("Cheqd VC Issued Successfully:", responseBody);
+    return {
+      success: true,
+      credentialData: responseBody,
+      uniqueTypes: uniqueTypes,
+    };
+  } catch (error: any) {
+    console.error("Error during Cheqd VC Issuance:", error.message);
+    return { success: false, error: error.message };
+  }
+}
 
 export async function POST(request: Request) {
   const supabase = await createClient();
@@ -25,21 +287,19 @@ export async function POST(request: Request) {
     `Processing profile save request for user: ${userId}, email: ${userEmail}`
   );
 
-  let receivedProfileData;
+  let receivedProfileData: any;
   try {
     const body = await request.json();
     receivedProfileData = body.profileData;
     if (!receivedProfileData)
       throw new Error("'profileData' missing in request body");
-    // Basic check if password exists in payload (as requested)
-    if (typeof receivedProfileData.password !== "string") {
-      console.warn("Password field missing or not a string in profileData");
-      // Depending on policy, you might reject or proceed without password
-      // For now, we'll proceed but log a warning.
-    }
+
     console.log(
-      "Received profile data (including password - UNSAFE):",
-      receivedProfileData
+      "Received raw profile data:",
+      JSON.stringify({
+        ...receivedProfileData,
+        password: "[REDACTED IF PRESENT]",
+      })
     );
   } catch (e: any) {
     console.error("Profile save error: Invalid request body", e);
@@ -50,24 +310,22 @@ export async function POST(request: Request) {
   }
 
   let did: string | null = null;
-  try {
-    console.log("Attempting Cheqd DID creation before saving profile...");
-    const apiKey = process.env.NEXT_PUBLIC_CHEQD_API_KEY;
-    if (!apiKey) {
-      console.error(
-        // Log as error because it prevents saving
-        "CHEQD_API_KEY environment variable is not set. Cannot create DID and save profile."
-      );
-      throw new Error(
-        "Configuration error: Cheqd API key is missing, cannot proceed with profile creation."
-      );
-    }
+  let aidTags: string[] = [];
+  let vcIssuanceResult: {
+    success: boolean;
+    credentialData?: any;
+    uniqueTypes?: string[];
+    error?: string;
+  } = { success: false };
 
-    // Generate DID components
+  try {
+    console.log("Attempting Cheqd DID creation...");
+    const cheqdApiKey = process.env.NEXT_PUBLIC_CHEQD_API_KEY;
+    if (!cheqdApiKey) {
+      throw new Error("Configuration error: Cheqd API key is missing.");
+    }
     const didUUID = crypto.randomUUID();
     const generatedDid = `did:cheqd:testnet:${didUUID}`;
-
-    // Construct Cheqd API Payload
     const cheqdPayload = {
       network: "testnet",
       identifierFormatType: "uuid",
@@ -90,128 +348,193 @@ export async function POST(request: Request) {
         ],
       },
     };
-
-    console.log(`Sending request to Cheqd API for DID: ${generatedDid}`);
-
-    // Call Cheqd API using fetch
     const cheqdResponse = await fetch(
       "https://studio-api.cheqd.net/did/create",
       {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "x-api-key": apiKey,
+          "x-api-key": cheqdApiKey,
         },
         body: JSON.stringify(cheqdPayload),
       }
     );
-
-    // Check Cheqd API response
+    let cheqdResponseBody;
+    try {
+      cheqdResponseBody = await cheqdResponse.json();
+    } catch (e) {
+      cheqdResponseBody = await cheqdResponse.text();
+    }
     if (!cheqdResponse.ok) {
-      const errorBody = await cheqdResponse.text();
-      console.error(
-        `Cheqd API request failed with status ${cheqdResponse.status}: ${errorBody}`
-      );
+      const errorMessage =
+        typeof cheqdResponseBody === "object"
+          ? cheqdResponseBody.message ||
+            cheqdResponseBody.error ||
+            JSON.stringify(cheqdResponseBody)
+          : cheqdResponseBody;
       throw new Error(
-        `Failed to create Cheqd DID (Status: ${cheqdResponse.status}). Profile cannot be saved.`
+        `Cheqd DID creation failed (Status: ${cheqdResponse.status}): ${errorMessage}`
+      );
+    }
+    console.log("Cheqd DID created successfully:", cheqdResponseBody);
+    did = generatedDid;
+    console.log(`Cheqd DID ${did} created.`);
+
+    console.log("Calling Gemini for aid_tags analysis...");
+    const identityUrls = Array.isArray(receivedProfileData.prove_of_identity)
+      ? receivedProfileData.prove_of_identity.filter(
+          (url: any) => typeof url === "string"
+        )
+      : [];
+    const incomeUrl =
+      typeof receivedProfileData.prove_of_income === "string"
+        ? receivedProfileData.prove_of_income
+        : null;
+    const additionalUrls = Array.isArray(
+      receivedProfileData.additional_document
+    )
+      ? receivedProfileData.additional_document.filter(
+          (url: any) => typeof url === "string"
+        )
+      : [];
+    const docUrls = {
+      identity: identityUrls,
+      income: incomeUrl,
+      additional: additionalUrls,
+    };
+    const profileForGemini = { ...receivedProfileData };
+    delete profileForGemini.password;
+
+    aidTags = await analyzeDocumentsWithGemini(profileForGemini, docUrls);
+    console.log(
+      `Gemini analysis completed. Generated aid_tags: ${aidTags.join(", ") || "None"}`
+    );
+
+    console.log(
+      `Attempting to issue Verifiable Credential for user ${userId} with DID ${did}...`
+    );
+    vcIssuanceResult = await issueVerifiableCredential(
+      did,
+      userId,
+      receivedProfileData,
+      aidTags
+    );
+    if (!vcIssuanceResult.success) {
+      throw new Error(
+        `Failed to issue Verifiable Credential: ${vcIssuanceResult.error || "Unknown VC issuance error"}`
       );
     }
 
-    const cheqdResult = await cheqdResponse.json();
-    console.log("Cheqd DID created successfully:", cheqdResult);
-    did = generatedDid; // Assign the successfully created DID
-    console.log(`Cheqd DID ${did} will be saved with the profile.`);
-  } catch (didError: any) {
-    console.error("Error during Cheqd DID creation:", didError.message);
+    const userData: User = {
+      id: userId,
+      password: receivedProfileData.password,
+      email: userEmail as string,
+      full_name: receivedProfileData.full_name,
+      job: receivedProfileData.job,
+      phone_number: Number(receivedProfileData.phone_number),
+      family_number: Number(receivedProfileData.family_number),
+      gender: receivedProfileData.gender,
+      country: receivedProfileData.country,
+      regional: receivedProfileData.regional,
+      village: receivedProfileData.village,
+      address: receivedProfileData.address,
+      background_story: receivedProfileData.background_story,
+      category: Array.isArray(receivedProfileData.category)
+        ? `{${receivedProfileData.category.filter((c: any) => typeof c === "string").join(",")}}`
+        : typeof receivedProfileData.category === "string"
+          ? `{${receivedProfileData.category}}`
+          : "{}",
+      prove_of_identity: Array.isArray(receivedProfileData.prove_of_identity)
+        ? `{${receivedProfileData.prove_of_identity.filter((u: any) => typeof u === "string").join(",")}}`
+        : "{}",
+      prove_of_income:
+        typeof receivedProfileData.prove_of_income === "string"
+          ? receivedProfileData.prove_of_income
+          : null,
+      additional_document: Array.isArray(
+        receivedProfileData.additional_document
+      )
+        ? `{${receivedProfileData.additional_document.filter((u: any) => typeof u === "string").join(",")}}`
+        : "{}",
+      updated_at: new Date().toISOString(),
+      cheqd_did: did,
+      aid_tags:
+        Array.isArray(aidTags) && aidTags.length > 0
+          ? `{${aidTags.join(",")}}`
+          : undefined,
+    };
+    if (isNaN(userData.phone_number as number)) userData.phone_number = null;
+    if (isNaN(userData.family_number as number)) userData.family_number = null;
+    console.log(
+      "Final data prepared for DB upsert (password WILL be stored):",
+      JSON.stringify({ ...userData, password: "[REDACTED FOR LOG]" })
+    );
+
+    try {
+      console.log("Attempting database upsert for user...");
+      const { error: upsertUserError } = await supabase
+        .from("users")
+        .upsert(userData, { onConflict: "id" });
+
+      if (upsertUserError) {
+        console.error("Database user upsert error:", upsertUserError);
+        throw new Error(
+          `Database error saving user profile: ${upsertUserError.message} (Code: ${upsertUserError.code})`
+        );
+      }
+      console.log(`User profile for ${userId} upserted successfully.`);
+
+      console.log("Attempting database insert for verifiable credential...");
+
+      if (!vcIssuanceResult.credentialData || !vcIssuanceResult.uniqueTypes) {
+        throw new Error(
+          "Missing required data (credential data, types, ID from response) to save credential."
+        );
+      }
+
+      const vcDataToInsert: VerifiableCredential = {
+        user_id: userId,
+        type: vcIssuanceResult.uniqueTypes.join(","),
+        vc_json: vcIssuanceResult.credentialData,
+        status: "issued",
+      };
+
+      const { error: insertVcError } = await supabase
+        .from("verifiable_credentials")
+        .insert(vcDataToInsert);
+
+      if (insertVcError) {
+        console.error("Database VC insert error:", insertVcError);
+        throw new Error(
+          `User profile saved, but failed to save Verifiable Credential: ${insertVcError.message} (Code: ${insertVcError.code})`
+        );
+      }
+    } catch (dbError: any) {
+      console.error("Error during database operations:", dbError.message);
+      throw dbError;
+    }
+
     return NextResponse.json(
       {
-        error: `Failed to create necessary DID: ${didError.message}. Profile was not saved.`,
+        message:
+          "User profile saved, DID created, Verifiable Credential issued and saved successfully.",
+        vcStatus: {
+          success: true,
+        },
+        userId: userId,
+        did: did,
       },
-      { status: 500 } // Internal Server Error or appropriate status
-    );
-  }
-
-  if (!did) {
-    console.error(
-      "Logical error: DID is null after successful block, preventing profile save."
-    );
-    return NextResponse.json(
-      { error: "Internal error: Failed to obtain DID before saving profile." },
-      { status: 500 }
-    );
-  }
-
-  const userData: any = {
-    id: userId,
-    email: userEmail,
-    full_name: receivedProfileData.full_name,
-    job: receivedProfileData.job,
-    phone_number: receivedProfileData.phone_number,
-    family_number: receivedProfileData.family_number,
-    gender: receivedProfileData.gender,
-    country: receivedProfileData.country,
-    regional: receivedProfileData.regional,
-    village: receivedProfileData.village,
-    address: receivedProfileData.address,
-    background_story: receivedProfileData.background_story,
-    category: receivedProfileData.category,
-    prove_of_identity: receivedProfileData.prove_of_identity, // Will format below
-    prove_of_income: receivedProfileData.prove_of_income,
-    additional_document: receivedProfileData.additional_document, // Will format below
-    updated_at: new Date().toISOString(),
-    cheqd_did: did, // Include the generated DID
-  };
-
-  if (receivedProfileData.password) {
-    userData.password = receivedProfileData.password; // Still potentially unsafe
-  }
-
-  if (Array.isArray(userData.prove_of_identity)) {
-    userData.prove_of_identity = `{${userData.prove_of_identity.join(",")}}`;
-  } else {
-    console.warn(
-      "prove_of_identity was not an array, setting to empty array literal {}"
-    );
-    userData.prove_of_identity = "{}";
-  }
-
-  if (Array.isArray(userData.additional_document)) {
-    userData.additional_document = `{${userData.additional_document.join(",")}}`;
-  } else {
-    console.warn(
-      "additional_document was not an array, setting to empty array literal {}"
-    );
-    userData.additional_document = "{}";
-  }
-
-  console.log("Data formatted for DB upsert (including DID):", userData);
-
-  try {
-    console.log("Attempting upsert with formatted data and DID...");
-    const { error: upsertError } = await supabase
-      .from("users")
-      .upsert(userData, { onConflict: "id" }); // Use the formatted userData with DID
-
-    if (upsertError) {
-      console.error("Database upsert error after DID creation:", upsertError);
-      // Optional: Attempt to delete the created DID if the DB save fails? (Adds complexity)
-      throw new Error(`Database error saving profile: ${upsertError.message}`);
-    }
-    console.log(
-      `Profile for user ${userId} with DID ${did} upserted successfully.`
-    );
-
-    return NextResponse.json(
-      { message: "User profile and DID saved successfully." },
       { status: 200 }
     );
   } catch (error: any) {
-    console.error("Error during final profile save:", error);
+    console.error("Error during profile processing pipeline:", error.message);
     return NextResponse.json(
       {
-        error:
-          error.message ||
-          "Failed to save profile data after DID creation. DID may have been created but profile is not updated.",
+        error: `Failed to process user profile: ${error.message}`,
+        vcStatus: {
+          success: vcIssuanceResult.success,
+          error: vcIssuanceResult.error,
+        },
       },
       { status: 500 }
     );

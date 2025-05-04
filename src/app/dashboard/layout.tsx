@@ -1,6 +1,9 @@
-import UserProfileMenu from "@/components/layout/UserProfileMenu"; // Import komponen baru
+import UserProfileMenu from "@/components/screen/dashboard/user-profile-menu";
 import { createClient } from "@/lib/server";
+import { Footer } from "@/components/ui/footer";
 import React from "react";
+import Image from "next/image";
+import DashboardNavBarWrapper from "@/components/ui/DashboardNavBarWrapper";
 
 interface UserProfile {
   id: string;
@@ -39,64 +42,29 @@ export default async function DashboardLayout({
   return (
     <div className="min-h-screen bg-[#f9f9f9]">
       {/* Header */}
-      <header className="bg-[#0039c7] text-white py-4 px-6">
+      <header className="bg-[#0039c7] sticky top-0 z-40 text-white py-4 px-6 shadow">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-8">
             <div className="flex items-center">
               <div className="w-8 h-8 mr-2">
-                <svg
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="w-full h-full"
-                >
-                  <path
-                    d="M12 2L4 6V12C4 15.31 7.58 20 12 22C16.42 20 20 15.31 20 12V6L12 2Z"
-                    fill="white"
-                    stroke="white"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
+                <Image
+                  src="/group-1-1.png"
+                  alt="VeriTrust Logo"
+                  width={40}
+                  height={40}
+                  className="rounded-full mt-1"
+                />
               </div>
               <span className="text-xl font-bold">VeriTrust</span>
             </div>
-            <nav>
-              <ul className="flex space-x-6">
-                <li className="border-b-2 border-white pb-1">
-                  <a href="#" className="font-medium">
-                    Find Aid
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="font-medium">
-                    Saved Aid
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="font-medium">
-                    News
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="font-medium">
-                    Testimonial
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="font-medium">
-                    Contact
-                  </a>
-                </li>
-              </ul>
-            </nav>
+            <DashboardNavBarWrapper className="right-8 pr-20 bottom-2" />
           </div>
           {/* User Profile Menu Component */}
           <UserProfileMenu userProfile={userProfile} />
         </div>
       </header>
       {children}
+      <Footer />
     </div>
   );
 }

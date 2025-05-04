@@ -1,5 +1,7 @@
 import React from "react";
+import { PrimeTwitter } from "../icons/twitter";
 import { Separator } from "./separator";
+import { MdiInstagram } from "../icons/instagram";
 
 const footerLinks = {
   usefulLinks: [
@@ -9,13 +11,7 @@ const footerLinks = {
     "Technology",
     "Terms & Services",
   ],
-  community: [
-    "Help Center",
-    "Partners",
-    "Suggestions",
-    "Blog",
-    "Newsletters",
-  ],
+  community: ["Help Center", "Partners", "Suggestions", "Blog", "Newsletters"],
   partner: ["Our Partner", "Become a Partner"],
 };
 
@@ -85,22 +81,9 @@ export function Footer() {
           </span>
         </div>
         <div className="flex space-x-4 md:space-x-6">
-          <img
-            className="w-[22px] h-[22px]"
-            alt="Social"
-            src="/vector-2.svg"
-          />
-          <img
-            className="w-[22px] h-[22px]"
-            alt="Social"
-            src="/group.png"
-          />
-          <img className="w-6 h-5" alt="Social" src="/group-2.png" />
-          <img
-            className="w-[22px] h-[22px]"
-            alt="Social"
-            src="/vector-3.svg"
-          />
+          <MdiInstagram className="w-[22px] h-[22px] text-white" />
+          <PrimeTwitter className="w-[22px] h-[22px] text-white" />
+          <img className="w-[22px] h-[22px]" alt="Social" src="/vector-3.svg" />
         </div>
       </div>
     </footer>

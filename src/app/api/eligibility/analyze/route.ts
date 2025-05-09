@@ -1,23 +1,23 @@
-import { NextRequest, NextResponse } from 'next/server';
-import OpenAI from 'openai';
+import { NextRequest, NextResponse } from "next/server";
+import OpenAI from "openai";
 
 // Initialize OpenAI client
 // Note: You'll need to set OPENAI_API_KEY in your environment variables
 const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
+  apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY,
 });
 
 // Define interfaces for OpenAI message content
 interface ImageContent {
-  type: 'image_url';
+  type: "image_url";
   image_url: {
     url: string;
-    detail: 'low' | 'high' | 'auto';
+    detail: "low" | "high" | "auto";
   };
 }
 
 interface TextContent {
-  type: 'text';
+  type: "text";
   text: string;
 }
 
@@ -42,71 +42,71 @@ interface EligibilityResult {
   metrics: EligibilityMetric[];
   summary: string;
   possibleFraud: boolean;
-  confidenceLevel: 'low' | 'medium' | 'high';
+  confidenceLevel: "low" | "medium" | "high";
 }
 
 export async function POST(request: NextRequest) {
   try {
     const formData = await request.formData();
-    
+
     // Extract user profile data
-    const userData = formData.get('userData');
-    if (!userData || typeof userData !== 'string') {
+    const userData = formData.get("userData");
+    if (!userData || typeof userData !== "string") {
       return NextResponse.json(
-        { error: 'User data is required' },
+        { error: "User data is required" },
         { status: 400 }
       );
     }
-    
+
     const userDataObj = JSON.parse(userData);
-    
+
     // Extract uploaded images (ID card, profile picture, pay slip)
-    const idCard = formData.get('idCard') as File | null;
-    const profileImage = formData.get('profileImage') as File | null;
-    const paySlip = formData.get('paySlip') as File | null;
-    const additionalDocs = formData.getAll('additionalDocs') as File[];
-    
+    const idCard = formData.get("idCard") as File | null;
+    const profileImage = formData.get("profileImage") as File | null;
+    const paySlip = formData.get("paySlip") as File | null;
+    const additionalDocs = formData.getAll("additionalDocs") as File[];
+
     // Prepare images for analysis
     const imageContents: ImageData[] = [];
-    
+
     // Convert files to base64 for OpenAI API
     if (idCard) {
       const buffer = await idCard.arrayBuffer();
-      const base64 = Buffer.from(buffer).toString('base64');
+      const base64 = Buffer.from(buffer).toString("base64");
       imageContents.push({
-        type: 'id_card',
+        type: "id_card",
         content: base64,
       });
     }
-    
+
     if (profileImage) {
       const buffer = await profileImage.arrayBuffer();
-      const base64 = Buffer.from(buffer).toString('base64');
+      const base64 = Buffer.from(buffer).toString("base64");
       imageContents.push({
-        type: 'profile_image',
+        type: "profile_image",
         content: base64,
       });
     }
-    
+
     if (paySlip) {
       const buffer = await paySlip.arrayBuffer();
-      const base64 = Buffer.from(buffer).toString('base64');
+      const base64 = Buffer.from(buffer).toString("base64");
       imageContents.push({
-        type: 'pay_slip',
+        type: "pay_slip",
         content: base64,
       });
     }
-    
+
     // Process additional documents
     for (const doc of additionalDocs) {
       const buffer = await doc.arrayBuffer();
-      const base64 = Buffer.from(buffer).toString('base64');
+      const base64 = Buffer.from(buffer).toString("base64");
       imageContents.push({
-        type: 'additional_document',
+        type: "additional_document",
         content: base64,
       });
     }
-    
+
     // Create prompt for GPT-4 Vision with detailed metrics requirements
     const systemPrompt = `You are an aid eligibility analyst. Your task is to:
 1. Verify the authenticity of submitted documents (check for signs of manipulation or inconsistency)
@@ -142,75 +142,76 @@ Provide your response in the following JSON format:
     // Create message content with images and user data
     const messageContent: MessageContent[] = [
       {
-        type: 'text',
+        type: "text",
         text: `Please analyze the following user profile and documents to determine eligibility for social aid:
 User Profile: ${JSON.stringify(userDataObj, null, 2)}
-Selected Category: ${userDataObj.category || 'Not specified'}
-Background Story: ${userDataObj.backgroundStory || 'Not provided'}`,
+Selected Category: ${userDataObj.category || "Not specified"}
+Background Story: ${userDataObj.backgroundStory || "Not provided"}`,
       },
     ];
-    
+
     // Add image content to the message
     for (const imageData of imageContents) {
       messageContent.push({
-        type: 'image_url',
+        type: "image_url",
         image_url: {
           url: `data:image/jpeg;base64,${imageData.content}`,
-          detail: 'high',
+          detail: "high",
         },
       });
     }
-    
+
     // Call OpenAI API with the latest model (GPT-4o)
     const response = await openai.chat.completions.create({
-      model: 'gpt-4o',
+      model: "gpt-4o",
       messages: [
-        { role: 'system', content: systemPrompt },
-        { role: 'user', content: messageContent },
+        { role: "system", content: systemPrompt },
+        { role: "user", content: messageContent },
       ],
       response_format: { type: "json_object" },
       max_tokens: 2000,
     });
-    
+
     // Process and extract structured data from the response
-    const analysisText = response.choices[0]?.message?.content || '';
-    
+    const analysisText = response.choices[0]?.message?.content || "";
+
     // Parse the JSON response
     let eligibilityResult: EligibilityResult;
     try {
       eligibilityResult = JSON.parse(analysisText);
     } catch (error) {
-      console.error('Error parsing JSON from OpenAI:', error);
-      console.log('Raw response:', analysisText);
-      
+      console.error("Error parsing JSON from OpenAI:", error);
+      console.log("Raw response:", analysisText);
+
       // Return a formatted error
       return NextResponse.json(
-        { error: 'Failed to parse eligibility analysis result' },
+        { error: "Failed to parse eligibility analysis result" },
         { status: 500 }
       );
     }
-    
+
     // Determine status based on overall score
-    const status = 
-      eligibilityResult.overallScore >= 70 ? 'Likely Eligible' : 
-      eligibilityResult.overallScore >= 40 ? 'Possibly Eligible' : 
-      'Likely Ineligible';
-    
-    // Return the detailed analysis 
+    const status =
+      eligibilityResult.overallScore >= 70
+        ? "Likely Eligible"
+        : eligibilityResult.overallScore >= 40
+          ? "Possibly Eligible"
+          : "Likely Ineligible";
+
+    // Return the detailed analysis
     return NextResponse.json({
       success: true,
       eligibilityResult: {
         ...eligibilityResult,
-        status
+        status,
       },
-      rawAnalysis: analysisText
+      rawAnalysis: analysisText,
     });
-    
   } catch (error) {
-    console.error('Error in eligibility analysis:', error);
+    console.error("Error in eligibility analysis:", error);
     return NextResponse.json(
-      { error: 'Failed to analyze eligibility' },
+      { error: "Failed to analyze eligibility" },
       { status: 500 }
     );
   }
-} 
+}

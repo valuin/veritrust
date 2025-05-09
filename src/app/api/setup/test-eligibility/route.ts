@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server';
-import OpenAI from 'openai';
+import { NextRequest, NextResponse } from "next/server";
+import OpenAI from "openai";
 
 // Sample test user data
 const sampleUserData = {
@@ -13,27 +13,25 @@ const sampleUserData = {
   village: "Sentul",
   family: "4 members",
   category: "Refugees",
-  backgroundStory: "Fled from conflict in home country with my family including two young children. Currently working in construction but struggling to meet basic needs. My youngest child has a medical condition requiring regular treatment."
+  backgroundStory:
+    "Fled from conflict in home country with my family including two young children. Currently working in construction but struggling to meet basic needs. My youngest child has a medical condition requiring regular treatment.",
 };
 
 // Initialize OpenAI client
 const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
+  apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY,
 });
 
 export async function GET(request: NextRequest) {
   try {
     // Check for secret key to prevent unauthorized access
     const { searchParams } = new URL(request.url);
-    const secretKey = searchParams.get('secretKey');
-    
+    const secretKey = searchParams.get("secretKey");
+
     if (secretKey !== process.env.SETUP_SECRET_KEY) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
-    
+
     // Generate mock analysis without using real images
     // This simulates what the eligibility/analyze endpoint would return
     const systemPrompt = `You are an aid eligibility analyst. Generate a sample eligibility analysis for a test user.
@@ -66,36 +64,36 @@ The user is a refugee named ${sampleUserData.name} who fled from conflict with a
 
     // Call OpenAI with the latest model (GPT-4o)
     const response = await openai.chat.completions.create({
-      model: 'gpt-4o',
-      messages: [
-        { role: 'system', content: systemPrompt }
-      ],
+      model: "gpt-4o",
+      messages: [{ role: "system", content: systemPrompt }],
       response_format: { type: "json_object" },
       max_tokens: 2000,
     });
-    
-    const analysisText = response.choices[0]?.message?.content || '';
-    
+
+    const analysisText = response.choices[0]?.message?.content || "";
+
     // Parse the JSON response
     let eligibilityResult;
     try {
       eligibilityResult = JSON.parse(analysisText);
     } catch (error) {
-      console.error('Error parsing JSON from OpenAI:', error);
-      console.log('Raw response:', analysisText);
-      
+      console.error("Error parsing JSON from OpenAI:", error);
+      console.log("Raw response:", analysisText);
+
       return NextResponse.json(
-        { error: 'Failed to parse eligibility analysis result' },
+        { error: "Failed to parse eligibility analysis result" },
         { status: 500 }
       );
     }
-    
+
     // Determine status based on overall score
-    const status = 
-      eligibilityResult.overallScore >= 70 ? 'Likely Eligible' : 
-      eligibilityResult.overallScore >= 40 ? 'Possibly Eligible' : 
-      'Likely Ineligible';
-    
+    const status =
+      eligibilityResult.overallScore >= 70
+        ? "Likely Eligible"
+        : eligibilityResult.overallScore >= 40
+          ? "Possibly Eligible"
+          : "Likely Ineligible";
+
     // Return test data along with the analysis
     return NextResponse.json({
       success: true,
@@ -103,10 +101,11 @@ The user is a refugee named ${sampleUserData.name} who fled from conflict with a
       testUserData: sampleUserData,
       eligibilityResult: {
         ...eligibilityResult,
-        status
+        status,
       },
       howToTest: {
-        description: "To test the actual analyze endpoint with images, use the following curl command:",
+        description:
+          "To test the actual analyze endpoint with images, use the following curl command:",
         curlCommand: `curl -X POST http://localhost:3000/api/eligibility/analyze \\
   -F "userData=$(cat <<EOF
 ${JSON.stringify(sampleUserData, null, 2)}
@@ -114,15 +113,14 @@ EOF
 )" \\
   -F "idCard=@/path/to/id_card.jpg" \\
   -F "profileImage=@/path/to/profile.jpg" \\
-  -F "paySlip=@/path/to/payslip.jpg"`
-      }
+  -F "paySlip=@/path/to/payslip.jpg"`,
+      },
     });
-    
   } catch (error) {
-    console.error('Error in test eligibility:', error);
+    console.error("Error in test eligibility:", error);
     return NextResponse.json(
-      { error: 'Failed to generate test analysis' },
+      { error: "Failed to generate test analysis" },
       { status: 500 }
     );
   }
-} 
+}

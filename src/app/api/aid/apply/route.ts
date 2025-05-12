@@ -13,8 +13,8 @@ const openai = new OpenAI({
 
 interface AidApplication {
   user_id: string;
-  aid_program_id: string;
-  status: string;
+  program_id: string;
+  application_status: string;
   eligibility_score?: number | null;
   analysis_result?: string | null;
   eligibility_metrics?: Record<string, any> | null;
@@ -80,130 +80,79 @@ export async function POST(request: NextRequest) {
 
     const profileDataObj = JSON.parse(profileData);
 
-    // Extract documents
-    const idCard = formData.get("idCard") as File | null;
-    const profileImage = formData.get("profileImage") as File | null;
-    const paySlip = formData.get("paySlip") as File | null;
-    const additionalDocs = formData.getAll("additionalDocs") as File[];
+    // -- Ambil Data Pengguna dari Supabase --
+    const { data: userData, error: userError } = await supabase
+      .from("users")
+      .select("prove_of_identity, prove_of_income, additional_document")
+      .eq("id", userId as string)
+      .single();
 
-    // Upload documents to Supabase Storage
-    const documentUrls: string[] = [];
-
-    if (idCard) {
-      const buffer = await idCard.arrayBuffer();
-      const { data: uploadData, error: uploadError } = await supabase.storage
-        .from("documents")
-        .upload(`${userId}/id_card_${Date.now()}.jpg`, buffer, {
-          contentType: idCard.type,
-        });
-
-      if (uploadError) {
-        console.error("Error uploading ID card:", uploadError);
-      } else if (uploadData) {
-        const { data: urlData } = supabase.storage
-          .from("documents")
-          .getPublicUrl(uploadData.path);
-
-        documentUrls.push(urlData.publicUrl);
-      }
+    if (userError || !userData) {
+      console.error("Error fetching user data:", userError);
+      return NextResponse.json(
+        { error: "Failed to fetch user document data" },
+        { status: 500 }
+      );
     }
 
-    if (profileImage) {
-      const buffer = await profileImage.arrayBuffer();
-      const { data: uploadData, error: uploadError } = await supabase.storage
-        .from("documents")
-        .upload(`${userId}/profile_image_${Date.now()}.jpg`, buffer, {
-          contentType: profileImage.type,
-        });
+    // -- Kumpulkan URL Dokumen dari Data Pengguna --
+    const existingDocumentUrls: string[] = [];
 
-      if (uploadError) {
-        console.error("Error uploading profile image:", uploadError);
-      } else if (uploadData) {
-        const { data: urlData } = supabase.storage
-          .from("documents")
-          .getPublicUrl(uploadData.path);
-
-        documentUrls.push(urlData.publicUrl);
-      }
+    // Handle prove_of_identity (text[])
+    if (Array.isArray(userData.prove_of_identity)) {
+      existingDocumentUrls.push(
+        ...userData.prove_of_identity.filter(
+          (url) => typeof url === "string" && url.startsWith("http")
+        )
+      );
+    } else if (
+      typeof userData.prove_of_identity === "string" &&
+      userData.prove_of_identity.startsWith("http")
+    ) {
+      // Fallback jika ternyata bukan array tapi string tunggal
+      existingDocumentUrls.push(userData.prove_of_identity);
     }
 
-    if (paySlip) {
-      const buffer = await paySlip.arrayBuffer();
-      const { data: uploadData, error: uploadError } = await supabase.storage
-        .from("documents")
-        .upload(`${userId}/pay_slip_${Date.now()}.jpg`, buffer, {
-          contentType: paySlip.type,
-        });
-
-      if (uploadError) {
-        console.error("Error uploading pay slip:", uploadError);
-      } else if (uploadData) {
-        const { data: urlData } = supabase.storage
-          .from("documents")
-          .getPublicUrl(uploadData.path);
-
-        documentUrls.push(urlData.publicUrl);
-      }
+    // Handle prove_of_income (asumsi string tunggal berdasarkan error)
+    if (
+      userData.prove_of_income &&
+      typeof userData.prove_of_income === "string" &&
+      userData.prove_of_income.startsWith("http")
+    ) {
+      existingDocumentUrls.push(userData.prove_of_income);
     }
 
-    // Process additional documents
-    for (let i = 0; i < additionalDocs.length; i++) {
-      const doc = additionalDocs[i];
-      const buffer = await doc.arrayBuffer();
-      const { data: uploadData, error: uploadError } = await supabase.storage
-        .from("documents")
-        .upload(`${userId}/additional_doc_${i}_${Date.now()}.jpg`, buffer, {
-          contentType: doc.type,
-        });
-
-      if (uploadError) {
-        console.error(`Error uploading additional document ${i}:`, uploadError);
-      } else if (uploadData) {
-        const { data: urlData } = supabase.storage
-          .from("documents")
-          .getPublicUrl(uploadData.path);
-
-        documentUrls.push(urlData.publicUrl);
-      }
+    // Handle additional_document (text[])
+    if (Array.isArray(userData.additional_document)) {
+      existingDocumentUrls.push(
+        ...userData.additional_document.filter(
+          (url) => typeof url === "string" && url.startsWith("http")
+        )
+      );
+    } else if (
+      typeof userData.additional_document === "string" &&
+      userData.additional_document.startsWith("http")
+    ) {
+      // Fallback jika ternyata bukan array tapi string tunggal
+      existingDocumentUrls.push(userData.additional_document);
     }
 
-    // Prepare images and data for AI analysis
+    // Prepare images and data for AI analysis using EXISTING URLs
     const imageContents: ChatContentItem[] = [];
 
-    if (idCard) {
-      const buffer = await idCard.arrayBuffer();
-      const base64 = Buffer.from(buffer).toString("base64");
-      imageContents.push({
-        type: "image_url",
-        image_url: {
-          url: `data:image/jpeg;base64,${base64}`,
-          detail: "high",
-        },
-      });
-    }
-
-    if (profileImage) {
-      const buffer = await profileImage.arrayBuffer();
-      const base64 = Buffer.from(buffer).toString("base64");
-      imageContents.push({
-        type: "image_url",
-        image_url: {
-          url: `data:image/jpeg;base64,${base64}`,
-          detail: "high",
-        },
-      });
-    }
-
-    if (paySlip) {
-      const buffer = await paySlip.arrayBuffer();
-      const base64 = Buffer.from(buffer).toString("base64");
-      imageContents.push({
-        type: "image_url",
-        image_url: {
-          url: `data:image/jpeg;base64,${base64}`,
-          detail: "high",
-        },
-      });
+    for (const url of existingDocumentUrls) {
+      // Pastikan URL valid sebelum ditambahkan
+      if (url && typeof url === "string" && url.startsWith("http")) {
+        imageContents.push({
+          type: "image_url",
+          image_url: {
+            url: url,
+            detail: "low",
+          },
+        });
+      } else {
+        console.warn(`Invalid or missing URL skipped for AI analysis: ${url}`);
+      }
     }
 
     // Analyze with OpenAI if documents are provided
@@ -285,31 +234,22 @@ Selected Category: ${category || "Not specified"}`,
       }
     }
 
-    // Determine status based on overall score
-    const status = eligibilityScore
-      ? eligibilityScore >= 70
-        ? "Likely Eligible"
-        : eligibilityScore >= 40
-          ? "Possibly Eligible"
-          : "Likely Ineligible"
-      : "Pending Review";
-
     // Save application to database
     const application: AidApplication = {
       user_id: userId as string,
-      aid_program_id: aidProgramId as string,
-      status: "pending",
+      program_id: aidProgramId as string,
+      application_status: "pending",
       eligibility_score: eligibilityScore,
       analysis_result: analysisResult,
       eligibility_metrics: eligibilityMetrics,
-      documents: documentUrls,
+      documents: existingDocumentUrls,
       profile_data: profileDataObj,
       category: category as string | undefined,
     };
 
     // Insert into Supabase
     const { data, error } = await supabase
-      .from("aid_applications")
+      .from("applications")
       .insert(application)
       .select()
       .single();
@@ -322,12 +262,24 @@ Selected Category: ${category || "Not specified"}`,
       );
     }
 
+    // Determine final status based on analysis (if performed)
+    const finalStatus =
+      eligibilityMetrics &&
+      typeof eligibilityMetrics === "object" &&
+      "overallScore" in eligibilityMetrics
+        ? eligibilityMetrics.overallScore >= 70
+          ? "Likely Eligible"
+          : eligibilityMetrics.overallScore >= 40
+            ? "Possibly Eligible"
+            : "Likely Ineligible"
+        : "Submitted (Pending Verification)"; // Default if no analysis done here
+
     return NextResponse.json({
       success: true,
       applicationId: data.id,
       eligibilityScore,
       eligibilityMetrics,
-      status,
+      status: finalStatus, // Return the determined status
       message: "Application submitted successfully",
     });
   } catch (error) {

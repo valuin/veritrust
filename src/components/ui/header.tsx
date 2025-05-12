@@ -15,7 +15,7 @@ export function Header() {
   const router = useRouter();
   return (
     <header className="flex bg-white flex-col lg:flex-row lg:justify-between lg:items-center px-4 lg:px-16 py-6 md:py-10 gap-4 md:gap-0">
-      <div className="flex items-center">
+      <div className="flex items-center" onClick={() => router.push("/dashboard")}>
         <div className="hidden lg:block">
           <img
             className="w-10 h-[29px]"

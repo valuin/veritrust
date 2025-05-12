@@ -178,7 +178,7 @@ async function createTablesDirectly(reset: boolean) {
       CREATE TABLE IF NOT EXISTS aid_applications (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
         user_id UUID,
-        aid_program_id TEXT,
+        program_id TEXT,
         status TEXT,
         eligibility_score INT,
         analysis_result TEXT,

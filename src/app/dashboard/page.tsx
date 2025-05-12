@@ -1,20 +1,24 @@
 "use client";
-import { createClient } from "@/lib/client"; // Use the server helper
+import { createClient } from "@/lib/client"; 
 import { ChevronDown, Search } from "lucide-react";
 import { useState, useEffect } from "react";
 import AiCard from "@/components/screen/dashboard/ai-card";
 import AidProgramCard from "@/components/screen/dashboard/aid-program-card";
+import { useUserStore } from "@/store/useUser";
 
 interface AidProgram {
-  program_id: string; // Assuming UUID or similar string ID
+  program_id: string; 
   name: string;
   description: string;
   created_at: string;
-  required_tags: string[] | null; // Assuming tags are stored as text[] or similar
-  nominal: number | null; // Assuming numerical value for aid amount
+  required_tags: string[] | null; 
+  nominal: number | null; 
+  about?: string;
+  details?: string;
+  eligibility?: string;
+  how_to_apply?: string;
 }
 
-// Make the page an async component
 export default function DashboardPage() {
   const [allScheduleChecked, setAllScheduleChecked] = useState(true);
   const [allCategoryChecked, setAllCategoryChecked] = useState(true);
@@ -22,7 +26,18 @@ export default function DashboardPage() {
   const [aidPrograms, setAidPrograms] = useState<AidProgram[]>([]);
   const [fetchError, setFetchError] = useState<string | null>(null);
 
-  // Ambil data program bantuan saat komponen dimuat pertama kali
+  const fetchUser = useUserStore((state) => state.fetchUser);
+  const hasFetched = useUserStore((state) => state.hasFetched);
+
+  useEffect(() => {
+    if (!hasFetched) {
+      console.log(
+        "DashboardPage: Fetching initial user data (hasFetched=false)..."
+      );
+      fetchUser();
+    }
+  }, [fetchUser, hasFetched]); 
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -44,11 +59,10 @@ export default function DashboardPage() {
     };
 
     fetchData();
-  }, []);
+  }, []); 
 
   return (
     <div className="flex">
-      {/* Sidebar */}
       <aside className="w-64 border-r border-[#d9d9d9] p-6">
         <div className="mb-8">
           <h2 className="text-lg font-bold mb-2">Filters</h2>

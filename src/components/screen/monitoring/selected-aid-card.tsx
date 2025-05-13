@@ -33,16 +33,16 @@ export function SelectedAidCard({ aid }: SelectedAidCardProps) {
         >
           <div className="flex items-center mb-2">
             <span className="font-bold text-gray-800 text-sm mr-2">
-              {aid.organization}
+              {aid.name}
             </span>
           </div>
           <div className="flex justify-between items-center">
-            <h3 className="text-xl text-gray-900 mb-2">{aid.title}</h3>
+            <h3 className="text-xl text-gray-900 mb-2">{aid.description}</h3>
             {aid.logoSrc && (
               <div className="rounded-full w-12 h-12">
                 <Image
                   src={aid.logoSrc}
-                  alt={`${aid.organization} Logo`}
+                  alt={`${aid.name} Logo`}
                   width={48}
                   height={48}
                   className="object-contain"

@@ -55,19 +55,14 @@ export function AiCard({
   children,
   className,
 }: AiCardProps) {
-  // State untuk mengelola modal pemilihan bantuan
   const [isSelectionModalOpen, setIsSelectionModalOpen] = useState(false);
-  // State untuk mengelola modal analisis
   const [isAnalyzingModalOpen, setIsAnalyzingModalOpen] = useState(false);
-  // State untuk menyimpan aid(s) yang dipilih untuk ditampilkan di modal analisis
   const [selectedAidForAnalysis, setSelectedAidForAnalysis] =
     useState<AidOption | null>(null);
-  // State untuk menyimpan data aid yang di-fetch
   const [fetchedAidOptions, setFetchedAidOptions] = useState<AidOption[]>([]);
   const [isFetchingAids, setIsFetchingAids] = useState(true);
   const [fetchAidsError, setFetchAidsError] = useState<string | null>(null);
 
-  // Fetch data aid saat AiCard mount
   useEffect(() => {
     const fetchAidPrograms = async () => {
       setIsFetchingAids(true);
@@ -84,8 +79,8 @@ export function AiCard({
           const mappedOptions: AidOption[] = data.map(
             (program: AidProgram) => ({
               id: program.program_id,
-              logoSrc: "/icons/default-aid-logo.png", // Placeholder
-              organization: "Unknown Org", // Placeholder
+              logoSrc: "/icons/default-aid-logo.png",
+              organization: "Unknown Org",
               recommendation: undefined,
               title: program.name,
               amount: program.nominal ?? 0,
@@ -106,54 +101,38 @@ export function AiCard({
     fetchAidPrograms();
   }, []);
 
-  // Fungsi yang dipanggil ketika tombol "Apply" di modal selection ditekan
   const handleApplySelected = (selectedAidIds: string[]) => {
     console.log("Applying selected aids:", selectedAidIds);
-    // Cari di data yang sudah di-fetch
     const selected = fetchedAidOptions.filter((aid) =>
       selectedAidIds.includes(aid.id)
     );
 
     if (selected.length > 0) {
-      // Choose one aid to display in the analyzing modal if multiple were selected
-      // For simplicity, just picking the first one here
       setSelectedAidForAnalysis(selected[0]);
 
-      // Close the selection modal
       setIsSelectionModalOpen(false);
 
-      // Open the analyzing modal
       setIsAnalyzingModalOpen(true);
 
-      // TODO: Start the actual AI analysis process here!
-      // This process should ideally update the progress of the workflow steps
-      // and eventually close the analyzing modal or show results.
     } else {
       console.warn("No aid selected, cannot start analysis.");
-      setIsSelectionModalOpen(false); // Close selection modal even if nothing selected
+      setIsSelectionModalOpen(false); 
     }
   };
 
-  // Fungsi yang dipanggil ketika tombol "Apply All" di modal selection ditekan
   const handleApplyAll = (allAidIds: string[]) => {
     console.log("Applying all aids:", allAidIds);
-    // Cari di data yang sudah di-fetch
     const all = fetchedAidOptions.filter((aid) => allAidIds.includes(aid.id));
 
     if (all.length > 0) {
-      // Choose one aid to display, maybe the "Most Recommend" one if available?
-      // Or just pick the first one again for simplicity
       const aidToDisplay =
         all.find((aid) => aid.recommendation === "Most Recommend") || all[0];
       setSelectedAidForAnalysis(aidToDisplay);
 
-      // Close the selection modal
       setIsSelectionModalOpen(false);
 
-      // Open the analyzing modal
       setIsAnalyzingModalOpen(true);
 
-      // TODO: Start the actual AI analysis process for ALL selected aids here!
     } else {
       console.warn("No aids available to apply to.");
       setIsSelectionModalOpen(false);

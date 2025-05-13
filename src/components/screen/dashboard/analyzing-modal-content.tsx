@@ -84,14 +84,7 @@ export function AnalyzingModalContent({
   const [applicationResponse, setApplicationResponse] = useState<any | null>(
     null
   );
-
-  const currentStepIndex = workflowSteps.findIndex(
-    (step) => !step.isComplete && step.progress < 100
-  );
-  const isAnalyzing = workflowSteps.some(
-    (step) => step.progress > 0 && !step.isComplete
-  );
-
+  
   const updateWorkflowStep = (
     id: string,
     progress: number,

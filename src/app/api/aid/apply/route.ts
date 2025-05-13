@@ -2,11 +2,11 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import OpenAI from "openai";
 
-// Initialize Supabase and OpenAI clients
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
 const supabaseServiceKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
 const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
+// Initialize OpenAI client
 const openai = new OpenAI({
   apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY,
 });
@@ -22,6 +22,7 @@ interface AidApplication {
   profile_data: Record<string, any>;
   category?: string;
   feedback?: string;
+  timeline?: TimelineEvent[];
 }
 
 // Interface for content types in OpenAI API
@@ -46,6 +47,13 @@ interface EligibilityMetric {
   explanation: string;
 }
 
+interface TimelineEvent {
+  date: string;
+  description: string;
+  details: string;
+  time: string;
+}
+
 interface EligibilityResult {
   overallScore: number;
   metrics: EligibilityMetric[];
@@ -53,6 +61,7 @@ interface EligibilityResult {
   possibleFraud: boolean;
   confidenceLevel: "low" | "medium" | "high";
   status?: string;
+  timeline_events: TimelineEvent[];
 }
 
 export async function POST(request: NextRequest) {
@@ -159,6 +168,7 @@ export async function POST(request: NextRequest) {
     let eligibilityScore = null;
     let analysisResult = null;
     let eligibilityMetrics = null;
+    let timeline_events_for_db: TimelineEvent[] | undefined = undefined;
 
     if (imageContents.length > 0) {
       // Create prompt for GPT-4 Vision with detailed metrics
@@ -168,6 +178,7 @@ export async function POST(request: NextRequest) {
 3. Compare the extracted information with the user-provided profile data for consistency
 4. Evaluate the eligibility based on the criteria for the selected aid category
 5. Provide detailed metrics with scoring and reasoning
+6. Generate a projected timeline for the application process based on the provided information and typical aid program workflows. The timeline should include key milestones from submission to potential aid disbursement.
 
 For your assessment, evaluate and score the following metrics (each out of 20 points):
 - DOCUMENT_AUTHENTICITY: Assess if the documents appear genuine and unaltered
@@ -190,7 +201,16 @@ Provide your response in the following JSON format:
   ],
   "summary": "<1-2 paragraph summary of overall findings>",
   "possibleFraud": <boolean>,
-  "confidenceLevel": "<low|medium|high>"
+  "confidenceLevel": "<low|medium|high>",
+  "timeline_events": [
+    {
+      "date": "YYYY-MM-DD",
+      "description": "<Short title or description of the event, e.g., Application Submitted>",
+      "details": "<Detailed explanation of this timeline step, e.g., Your application has been successfully submitted by our AI Agent. All required documents have been verified and sent to the program administrators for review.>",
+      "time": "HH.MM WIB"
+    }
+    // ... more timeline events like this for key milestones, provide at least 5-7 typical steps
+  ]
 }`;
 
       // Prepare full prompt with user data
@@ -222,6 +242,7 @@ Selected Category: ${category || "Not specified"}`,
         const eligibilityResult: EligibilityResult = JSON.parse(analysisResult);
         eligibilityScore = eligibilityResult.overallScore;
         eligibilityMetrics = eligibilityResult;
+        timeline_events_for_db = eligibilityResult.timeline_events;
       } catch (error) {
         console.error("Error parsing JSON from OpenAI:", error);
         console.log("Raw response:", analysisResult);
@@ -245,6 +266,7 @@ Selected Category: ${category || "Not specified"}`,
       documents: existingDocumentUrls,
       profile_data: profileDataObj,
       category: category as string | undefined,
+      timeline: timeline_events_for_db,
     };
 
     // Insert into Supabase

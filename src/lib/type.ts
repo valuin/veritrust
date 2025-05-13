@@ -32,8 +32,9 @@ export type VerifiableCredential = {
 // types.ts (Optional: Define types for better type safety)
 
 export type AidDetails = {
-  organization: string;
-  title: string;
+  name: string;
+  about: string;
+  description:string;
   amount: number;
   amountUnit: string;
   tags: string[];

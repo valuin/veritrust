@@ -28,7 +28,7 @@ interface ApplicationDataFromAPI {
   }>;
 }
 
-export function MonitoringView() {
+export default function Page() {
   const [aidDetails, setAidDetails] = useState<AidDetails | null>(null);
   const [statusDetails, setStatusDetails] = useState<StatusDetails | null>(
     null
@@ -225,5 +225,3 @@ export function MonitoringView() {
     </div>
   );
 }
-
-export default MonitoringView;

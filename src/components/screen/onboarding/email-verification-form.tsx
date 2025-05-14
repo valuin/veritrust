@@ -151,7 +151,7 @@ export function EmailVerificationForm({
       <h2 className="font-bold text-2xl mb-2">Verify Your Account</h2>
       {email ? (
         <p className="text-gray-600 mb-6 text-center">
-          We've sent a {code.length}-digit verification code to{" "}
+          We've sent a {code.length}-digit verification code to
           <span className="font-medium text-gray-800">{email}</span>. Please
           enter it below.
         </p>

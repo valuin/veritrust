@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+// import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs"; // Hapus
+// import { cookies } from "next/headers"; // Hapus
 
-// Initialize Supabase client
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
 const supabaseServiceKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
-
 const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
 interface EligibilityAnalysis {
@@ -20,6 +20,8 @@ interface EligibilityAnalysis {
 
 // Save eligibility analysis result
 export async function POST(request: NextRequest) {
+  // const cookieStore = cookies(); // Hapus
+  // const supabase = createRouteHandlerClient({ cookies: () => cookieStore }); // Hapus, supabase sudah global
   try {
     const {
       userId,
@@ -87,6 +89,8 @@ export async function POST(request: NextRequest) {
 
 // Get eligibility analysis result
 export async function GET(request: NextRequest) {
+  // const cookieStore = cookies(); // Hapus
+  // const supabase = createRouteHandlerClient({ cookies: () => cookieStore }); // Hapus, supabase sudah global
   try {
     const { searchParams } = new URL(request.url);
     const userId = searchParams.get("userId");

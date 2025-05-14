@@ -3,9 +3,9 @@
 import { useState } from "react";
 import Image from "next/image";
 import { MapPin, Bell, LogOut, X, Wallet } from "lucide-react";
-import { createClient } from "@/lib/client"; // Gunakan client Supabase
+import { createClient } from "@/lib/client"; 
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button"; // Import Button
+import { Button } from "@/components/ui/button"
 import Link from "next/link";
 import { Drawer } from "vaul";
 

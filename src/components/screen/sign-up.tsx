@@ -235,7 +235,7 @@ export default function SignUp() {
             htmlFor="privacy"
             className="text-[#b5b5b5] text-xs cursor-pointer"
           >
-            You agree to our friendly{" "}
+            You agree to our friendly
             <span className="underline">privacy policy</span>
           </label>
         </div>

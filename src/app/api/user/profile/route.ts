@@ -1,7 +1,11 @@
-import { createClient } from "@/lib/server";
+import { NextRequest, NextResponse } from "next/server";
+import { createClient } from "@supabase/supabase-js";
 import crypto from "crypto";
-import { NextResponse } from "next/server";
 import { User, VerifiableCredential } from "@/lib/type";
+
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
+const supabaseServiceKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
+const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
 async function analyzeDocumentsWithGemini(
   profileData: any,
@@ -264,24 +268,97 @@ async function issueVerifiableCredential(
   }
 }
 
-export async function POST(request: Request) {
-  const supabase = await createClient();
+export async function GET(request: NextRequest) {
+  const authHeader = request.headers.get("Authorization");
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    return NextResponse.json(
+      { error: "Unauthorized: Missing or invalid token" },
+      { status: 401 }
+    );
+  }
+  const jwt = authHeader.split(" ")[1];
 
   const {
-    data: { session },
-    error: sessionError,
-  } = await supabase.auth.getSession();
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser(jwt);
 
-  if (sessionError || !session?.user) {
-    console.error("Profile save error: User not authenticated", sessionError);
+  if (userError || !user) {
+    console.error("Profile get error: User not authenticated", userError);
     return NextResponse.json(
       { error: "Unauthorized: User not authenticated." },
       { status: 401 }
     );
   }
 
-  const userId = session.user.id;
-  const userEmail = session.user.email;
+  const userId = user.id;
+
+  try {
+    const { data: userProfile, error: fetchError } = await supabase
+      .from("users")
+      .select(
+        "full_name, job, phone_number, family_number, gender, country, regional, village, address, background_story, category, prove_of_identity, prove_of_income, additional_document, cheqd_did, aid_tags, updated_at"
+      )
+      .eq("id", userId)
+      .single();
+
+    if (fetchError) {
+      if (fetchError.code === "PGRST116") {
+        // No rows found
+        return NextResponse.json(
+          { error: "User profile not found." },
+          { status: 404 }
+        );
+      }
+      console.error("Error fetching user profile:", fetchError);
+      return NextResponse.json(
+        { error: "Failed to fetch user profile", details: fetchError.message },
+        { status: 500 }
+      );
+    }
+
+    if (!userProfile) {
+      return NextResponse.json(
+        { error: "User profile not found." },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json(userProfile);
+  } catch (error: any) {
+    console.error("Error in GET /api/user/profile:", error);
+    return NextResponse.json(
+      { error: "An unexpected error occurred", details: error.message },
+      { status: 500 }
+    );
+  }
+}
+
+export async function POST(request: Request) {
+  const authHeader = (request as NextRequest).headers.get("Authorization");
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    return NextResponse.json(
+      { error: "Unauthorized: Missing or invalid token" },
+      { status: 401 }
+    );
+  }
+  const jwt = authHeader.split(" ")[1];
+
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser(jwt);
+
+  if (userError || !user) {
+    console.error("Profile save error: User not authenticated", userError);
+    return NextResponse.json(
+      { error: "Unauthorized: User not authenticated." },
+      { status: 401 }
+    );
+  }
+
+  const userId = user.id;
+  const userEmail = user.email;
 
   console.log(
     `Processing profile save request for user: ${userId}, email: ${userEmail}`

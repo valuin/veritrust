@@ -137,7 +137,7 @@ export default function Login() {
                     className="w-full h-12 bg-[#0039c7] rounded-[10px] font-bold text-lg"
                     disabled={isLoading}
                   >
-                    {isLoading ? "Sedang login..." : "Login"}
+                    {isLoading ? "Logging In" : "Login"}
                   </Button>
 
                   {/* Error message */}

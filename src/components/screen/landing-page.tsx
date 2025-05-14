@@ -93,12 +93,12 @@ export const LandingPage = (): JSX.Element => {
     <div className="bg-white flex flex-row justify-center w-full">
       <div className="bg-white overflow-hidden w-full max-w-[1512px] relative">
         {/* Hero Section */}
-        <section className="mx-5 bg-[#0039c7] rounded-[20px] px-16 py-10 relative h-[847px]">
+        <section className="mx-5 bg-[#0039c7] rounded-[20px] px-10 py-10">
           <h1 className="text-center text-white text-8xl font-medium font-['Geist',Helvetica] leading-[115.2px] mt-8">
             Access Social Aid <br />
             Easily and Securely
           </h1>
-          <Card className="w-[901px] h-[358px] px-6 justify-center mx-auto mt-24 rounded-[10px]">
+          <Card className="w-[901px] h-[358px] mb-10 px-6 justify-center mx-auto mt-24 rounded-[10px]">
             <CardContent className="p-0 flex">
               <div className="relative w-1/2 h-full px-6 py-4 bg-[url(/image-3.png)] rounded-[10px] bg-cover bg-center flex items-center justify-center"></div>
               <div className="w-1/2 h-full flex flex-col justify-between px-6 py-4">
@@ -130,27 +130,32 @@ export const LandingPage = (): JSX.Element => {
               </div>
             </CardContent>
           </Card>
-          <div className="absolute bottom-[60px] left-[633px]">
-            <Button className="relative w-[205px] h-[62px] bg-white rounded-[100px] text-black font-semibold text-xl font-['Geist',Helvetica]">
-              <span className="mr-10">Join Now</span>
-              <div className="absolute w-[55px] h-[54px] top-1 right-1 bg-[#020916] rounded-[100px] flex items-center justify-center">
-                <img
-                  className="w-[17px] h-[17px]"
-                  alt="Arrow"
-                  src="/arrow-1.svg"
-                />
+          <div className="flex flex-col mt-5">
+            <div className="flex flex-row justify-between items-center">
+              <p className="font-normal text-white text-[15px] leading-[18.0px] w-[280px] font-['Geist',Helvetica]">
+                Our platform ensures your data remains private and protected
+                while making the aid distribution process transparent and
+                efficient.
+              </p>
+              <div className="mr-10">
+                <Button className="relative w-[205px] h-[62px] bg-white rounded-[100px] text-black font-semibold text-xl font-['Geist',Helvetica]">
+                  <span className="mr-10">Join Now</span>
+                  <div className="absolute w-[55px] h-[54px] top-1 right-1 bg-[#020916] rounded-[100px] flex items-center justify-center">
+                    <img
+                      className="w-[17px] h-[17px]"
+                      alt="Arrow"
+                      src="/arrow-1.svg"
+                    />
+                  </div>
+                </Button>
               </div>
-            </Button>
-          </div>
-          <p className="absolute bottom-[30px] left-[30px] font-normal text-white text-[15px] leading-[18.0px] w-[366px] font-['Geist',Helvetica]">
-            Our platform ensures your data remains private and protected while
-            making the aid distribution process transparent and efficient.
-          </p>
-          <div className="absolute bottom-[30px] right-[30px] flex items-center">
-            <MouseIcon className="w-[17px] h-[17px] text-white mr-2" />
-            <span className="font-normal text-white text-[15px] leading-[18.0px] font-['Geist',Helvetica]">
-              Scroll Down
-            </span>
+              <div className="flex items-center">
+                <MouseIcon className="w-[17px] h-[17px] text-white mr-2" />
+                <span className="font-normal text-white text-[15px] leading-[18.0px] font-['Geist',Helvetica]">
+                  Scroll Down
+                </span>
+              </div>
+            </div>
           </div>
         </section>
         {/* Mission Statement */}
@@ -209,57 +214,73 @@ export const LandingPage = (): JSX.Element => {
         </section>
         {/* Problem Statements */}
         <section className="mt-16 px-32">
-          <div className="columns-1 md:columns-2 lg:columns-3 gap-8 space-y-8">
-            <Card className="bg-[#e6eeff] rounded-[20px] mb-8 break-inside-avoid">
-              <CardContent className="p-10">
-                <p className="font-normal text-black text-xs leading-normal font-['Geist',Helvetica]">
-                  Fraud and corruption often lead to funds being misused or
-                  stolen before they reach the intended beneficiaries.
-                </p>
-                <h3 className="font-semibold text-black text-4xl leading-normal font-['Geist',Helvetica] mt-8">
-                  $40 billion <br />
-                  lost annually
-                </h3>
-              </CardContent>
-            </Card>
-            <Card className="bg-[url(/image-2.png)] bg-cover rounded-[20px] mb-8 break-inside-avoid">
-              <CardContent className="p-10 flex flex-col justify-between h-full">
-                <h3 className="font-semibold pr-20 text-white text-2xl leading-normal font-['Geist',Helvetica] w-[394px]">
-                  30% of Aid Never Reaches the Intended Recipients
-                </h3>
-                <p className="font-normal pr-20 mt-12 text-white text-base leading-normal font-['Geist',Helvetica] w-[413px]">
-                  Social aid distributed through traditional methods never
-                  reaches its intended recipients due to middlemen, and
-                  logistical challenges.
-                </p>
-              </CardContent>
-            </Card>
-            <div className="h-auto mb-8 break-inside-avoid">
-              <img
-                className="w-full h-full rounded-2xl object-cover"
-                alt="Aid Distribution"
-                src="/image.png"
-              />
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {/* Kolom Kiri */}
+            <div className="space-y-8 flex flex-col">
+              {/* 40 billion card - 25% height */}
+              <div className="bg-[#e6eeff] rounded-[20px]">
+                <div className="p-4 h-full flex flex-col justify-between">
+                  <p className="font-normal text-black text-[12px] leading-normal font-['Geist',Helvetica]">
+                    Fraud and corruption often lead to funds being misused or
+                    stolen before they reach the intended beneficiaries.
+                  </p>
+                  <h3 className="mt-4 font-semibold text-black text-[36px] leading-normal font-['Geist',Helvetica]">
+                    $40 billion <br />
+                    lost annually
+                  </h3>
+                </div>
+              </div>
+              {/* money card - 75% height */}
+              <div className="h-[75%] break-inside-avoid rounded-2xl overflow-hidden flex-grow-[0.85]">
+                <img
+                  className="w-full h-full object-cover"
+                  alt="Aid Recipients"
+                  src="/image-1.png"
+                />
+              </div>
             </div>
-            <div className="h-auto mb-8 break-inside-avoid">
-              <img
-                className="w-full h-full rounded-2xl object-cover"
-                alt="Aid Recipients"
-                src="/image-1.png"
-              />
+
+            {/* Kolom Tengah */}
+            <div className="space-y-8 flex flex-col">
+              {/* 30% aid card - 100% height */}
+              <Card className="bg-[url(/image-2.png)] bg-cover rounded-[20px] break-inside-avoid flex-grow">
+                <CardContent className="p-10 flex flex-col justify-between h-full">
+                  <h3 className="font-semibold text-white text-2xl leading-normal font-['Geist',Helvetica]">
+                    30% of Aid Never Reaches the Intended Recipients
+                  </h3>
+                  <p className="font-normal text-white text-base leading-normal font-['Geist',Helvetica]">
+                    Social aid distributed through traditional methods never
+                    reaches its intended recipients due to middlemen, and
+                    logistical challenges.
+                  </p>
+                </CardContent>
+              </Card>
             </div>
-            <Card className="bg-[#8cadff] rounded-[20px] mb-8 break-inside-avoid">
-              <CardContent className="p-8">
-                <p className="font-normal text-black text-xs leading-normal font-['Geist',Helvetica] w-[292px]">
-                  Waiting months for aid isn't just inconvenient—it's
-                  life-threatening. Traditional systems simply aren't built for
-                  speed or scalability during urgent situations.
-                </p>
-                <h3 className="font-semibold text-black text-4xl leading-normal font-['Geist',Helvetica] w-[270px] mt-4">
-                  2 weeks to several months
-                </h3>
-              </CardContent>
-            </Card>
+
+            {/* Kolom Kanan */}
+            <div className="space-y-8 flex flex-col">
+              {/* man & market card - 75% height */}
+              <div className="h-[75%] break-inside-avoid rounded-2xl overflow-hidden flex-grow-[0.75]">
+                <img
+                  className="w-full h-full object-cover"
+                  alt="Aid Distribution"
+                  src="/image.png"
+                />
+              </div>
+              {/* 2 week several month card - 25% height */}
+              <div className="bg-[#8cadff] rounded-[20px] w-full">
+                <div className="p-4 h-full flex flex-col justify-between">
+                  <p className="font-normal text-black text-[12px] leading-normal font-['Geist',Helvetica]">
+                    Waiting months for aid isn't just inconvenient—it's
+                    life-threatening. Traditional systems simply aren't built
+                    for speed or scalability during urgent situations.
+                  </p>
+                  <h3 className="font-semibold text-black text-[36px] leading-normal font-['Geist',Helvetica] mt-4">
+                    2 weeks to several months
+                  </h3>
+                </div>
+              </div>
+            </div>
           </div>
         </section>
         {/* Solution Section */}
@@ -370,10 +391,7 @@ export const LandingPage = (): JSX.Element => {
           </div>
           <div className="grid grid-cols-2 gap-8 mt-16">
             {techCards.map((card, index) => (
-              <Card
-                key={index}
-                className="bg-white rounded-[20px]"
-              >
+              <Card key={index} className="bg-white rounded-[20px]">
                 <CardContent className="p-0 flex items-center h-[167px]">
                   <div className="w-28 h-28 ml-[29px] bg-white rounded-[10px] border-2 flex items-center justify-center">
                     <img
@@ -382,7 +400,7 @@ export const LandingPage = (): JSX.Element => {
                       src={card.icon}
                     />
                   </div>
-                  <h3 className="ml-[30px] font-semibold text-[#0039c7] text-2xl leading-9 font-['Geist',Helvetica] w-[410px]">
+                  <h3 className="ml-10 mr-14 font-semibold text-[#0039c7] text-2xl leading-9 font-['Geist',Helvetica] w-[410px]">
                     {card.title}
                   </h3>
                 </CardContent>

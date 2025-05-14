@@ -27,27 +27,40 @@ export default function ContactPage() {
           </p>
         </div>
 
-        <form className="space-y-6">
+        <form className="space-y-6 max-w-2xl w-full mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
               <Label htmlFor="firstName">First Name</Label>
-              <Input id="firstName" placeholder="" />
+              <Input
+                id="firstName"
+                placeholder=""
+                className="border border-gray-300"
+              />
             </div>
             <div className="space-y-2">
               <Label htmlFor="lastName">Last Name</Label>
-              <Input id="lastName" placeholder="" />
+              <Input
+                id="lastName"
+                placeholder=""
+                className="border border-gray-300"
+              />
             </div>
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
-            <Input id="email" type="email" placeholder="" />
+            <Input
+              id="email"
+              type="email"
+              placeholder=""
+              className="border border-gray-300"
+            />
           </div>
 
-          <div className="space-y-2">
+          <div className="space-y-2 w-full">
             <Label htmlFor="phone">Phone Number</Label>
             <Select defaultValue="US">
-              <SelectTrigger>
+              <SelectTrigger className="border border-gray-300 w-full">
                 <SelectValue placeholder="Select country" />
               </SelectTrigger>
               <SelectContent>
@@ -66,7 +79,7 @@ export default function ContactPage() {
             <Textarea
               id="message"
               placeholder="Leave us a message..."
-              className="min-h-[150px]"
+              className="min-h-[150px] border border-gray-300"
             />
           </div>
 

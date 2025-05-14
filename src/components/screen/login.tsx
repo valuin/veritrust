@@ -58,7 +58,7 @@ export default function Login() {
   };
 
   return (
-    <div className="bg-white flex flex-col md:flex-row justify-center w-full min-h-screen">
+    <div className="bg-white flex flex-col md:flex-row justify-center w-full min-h-screen px-10">
       <div className="bg-white w-full relative flex flex-col md:flex-row">
         {/* Left side - Sign in form */}
         <div className="flex-1 flex justify-center items-center py-8">
@@ -146,19 +146,6 @@ export default function Login() {
                       {error}
                     </div>
                   )}
-
-                  {/* Sign in with Google */}
-                  <Button
-                    variant="outline"
-                    className="w-full h-12 rounded-[10px] border-2 border-[#b5b5b5] font-medium text-[#707070] text-lg"
-                  >
-                    <img
-                      src="/google.png"
-                      alt="Google"
-                      className="w-8 h-8 mr-3 object-cover"
-                    />
-                    Login With Google
-                  </Button>
                 </div>
               </div>
             </CardContent>
@@ -166,7 +153,7 @@ export default function Login() {
         </div>
 
         {/* Right side - Background image */}
-        <div className="hidden md:block w-full rounded-l-2xl max-w-xl h-[400px] md:h-[928px] relative bg-[url(/signin-veritrust.png)] bg-cover bg-center">
+        <div className="hidden md:block w-full rounded-2xl max-w-xl h-[400px] md:h-[928px] relative bg-[url(/signin-veritrust.png)] bg-cover bg-center">
           <img
             className="w-20 h-14 absolute top-10 left-10"
             alt="Veritrust Logo"

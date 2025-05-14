@@ -8,169 +8,22 @@ import { useRouter } from "next/navigation";
 
 export default function Page() {
   const router = useRouter();
-  const linkImage =
-    "https://cdn.rri.co.id/berita/Bukittinggi/o/1715917227082-PHOTO-2024-05-12-13-00-02/gl9b5uz4v7ahbtw.jpeg";
   return (
     <main className="container mx-auto pt-6 pb-[7rem] flex flex-col items-center">
-      <section className="w-full max-w-6xl flex flex-col items-center">
-        {/* Masonry Grid of Images */}
-        <div className="grid grid-cols-5 md:grid-cols-9 gap-2 md:gap-3 max-w-6xl mx-4">
-          {/* First Column - 2 grid */}
-          <div className="col-span-1 space-y-2 md:space-y-3 mt-12">
-            <div className="rounded-lg overflow-hidden aspect-[3/4]">
-              <Image
-                src={linkImage}
-                alt="Person from community"
-                width={350}
-                height={400}
-                className="w-full h-full object-cover"
-              />
-            </div>
-            <div className="rounded-lg overflow-hidden aspect-[3/4]">
-              <Image
-                src={linkImage}
-                alt="Person from community"
-                width={350}
-                height={400}
-                className="w-full h-full object-cover"
-              />
-            </div>
-          </div>
-
-          {/* Second Column - 2 grid */}
-          <div className="col-span-1 space-y-2 md:space-y-3 mt-6">
-            <div className="rounded-lg overflow-hidden aspect-square">
-              <Image
-                src={linkImage}
-                alt="Person from community"
-                width={350}
-                height={300}
-                className="w-full h-full object-cover"
-              />
-            </div>
-            <div className="rounded-lg overflow-hidden aspect-square">
-              <Image
-                src={linkImage}
-                alt="Person from community"
-                width={350}
-                height={300}
-                className="w-full h-full object-cover"
-              />
-            </div>
-          </div>
-
-          {/* Third Column - 1 grid */}
-          <div className="col-span-1 space-y-2 md:space-y-3 mt-0">
-            <div className="rounded-lg overflow-hidden aspect-[3/5]">
-              <Image
-                src={linkImage}
-                alt="Person from community"
-                width={350}
-                height={250}
-                className="w-full h-full object-cover"
-              />
-            </div>
-          </div>
-
-          {/* Fourth Column - 1 grid */}
-          <div className="col-span-1 space-y-2 md:space-y-3 mt-8">
-            <div className="rounded-lg overflow-hidden aspect-square">
-              <Image
-                src={linkImage}
-                alt="Person from community"
-                width={350}
-                height={300}
-                className="w-full h-full object-cover"
-              />
-            </div>
-          </div>
-
-          {/* Fifth Column (Center) - 1 grid */}
-          <div className="col-span-1 space-y-2 md:space-y-3 mt-4">
-            <div className="rounded-lg overflow-hidden aspect-[3/4]">
-              <Image
-                src={linkImage}
-                alt="Person from community"
-                width={350}
-                height={200}
-                className="w-full h-full object-cover"
-              />
-            </div>
-          </div>
-
-          {/* Sixth Column - 1 grid */}
-          <div className="col-span-1 space-y-2 md:space-y-3 mt-10">
-            <div className="rounded-lg overflow-hidden aspect-square">
-              <Image
-                src={linkImage}
-                alt="Person from community"
-                width={350}
-                height={300}
-                className="w-full h-full object-cover"
-              />
-            </div>
-          </div>
-
-          {/* Seventh Column - 1 grid */}
-          <div className="col-span-1 space-y-2 md:space-y-3 mt-0">
-            <div className="rounded-lg overflow-hidden aspect-[3/5]">
-              <Image
-                src={linkImage}
-                alt="Person from community"
-                width={350}
-                height={250}
-                className="w-full h-full object-cover"
-              />
-            </div>
-          </div>
-
-          {/* Eighth Column - 2 grid */}
-          <div className="col-span-1 space-y-2 md:space-y-3 mt-6">
-            <div className="rounded-lg overflow-hidden aspect-square">
-              <Image
-                src={linkImage}
-                alt="Person from community"
-                width={350}
-                height={300}
-                className="w-full h-full object-cover"
-              />
-            </div>
-            <div className="rounded-lg overflow-hidden aspect-square">
-              <Image
-                src={linkImage}
-                alt="Person from community"
-                width={350}
-                height={300}
-                className="w-full h-full object-cover"
-              />
-            </div>
-          </div>
-
-          {/* Ninth Column - 2 grid */}
-          <div className="col-span-1 space-y-2 md:space-y-3 mt-12">
-            <div className="rounded-lg overflow-hidden aspect-[3/4]">
-              <Image
-                src={linkImage}
-                alt="Person from community"
-                width={350}
-                height={400}
-                className="w-full h-full object-cover"
-              />
-            </div>
-            <div className="rounded-lg overflow-hidden aspect-[3/4]">
-              <Image
-                src={linkImage}
-                alt="Person from community"
-                width={350}
-                height={400}
-                className="w-full h-full object-cover"
-              />
-            </div>
-          </div>
+      <section className="w-full max-w-6xl flex flex-col items-center relative">
+        {/* Single Image to replace Masonry Grid */}
+        <div className="w-full max-w-6xl mx-auto">
+          <Image
+            src="/testimonial-grid.png" // Path to your single grid image
+            alt="Testimonial image grid"
+            width={1200} // Adjust width as needed, e.g., the width of your max-w-6xl container
+            height={400} // Adjust height as needed, or use layout='responsive' if you have intrinsic dimensions
+            className="w-full h-auto object-contain rounded-lg"
+          />
         </div>
 
         {/* Testimonial Content - Centered */}
-        <div className="absolute inset-0 top-1/2 flex flex-col items-center justify-center text-center">
+        <div className="absolute top-[14rem] flex flex-col items-center justify-center text-center">
           <Badge className="bg-gray-200 text-gray-800 hover:bg-gray-300 mb-4">
             Testimonials
           </Badge>
@@ -198,6 +51,7 @@ export default function Page() {
             </Button>
           </div>
         </div>
+        <div className="py-10"></div>
       </section>
     </main>
   );

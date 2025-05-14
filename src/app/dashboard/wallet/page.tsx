@@ -1,3 +1,4 @@
+"use client";
 import Image from "next/image";
 import {
   ArrowDown,
@@ -21,8 +22,56 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useEffect, useState } from "react";
+import { useUserStore } from "@/store/useUser";
+
+interface AidProgram {
+  application_status: string;
+  id: string;
+  program_id: string;
+  name: string;
+  description: string;
+  created_at: string;
+  required_tags: string[] | null;
+  nominal: number | null;
+  about?: string;
+  details?: string;
+  eligibility?: string;
+  how_to_apply?: string;
+  img?: string;
+}
 
 export default function WalletPage() {
+  const [appliedPrograms, setAppliedPrograms] = useState<AidProgram[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [fetchError, setFetchError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setIsLoading(true);
+      setFetchError(null);
+      try {
+        const response = await fetch("/api/dashboard-wallet");
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(
+            errorData.error || "Failed to fetch applied aid programs"
+          );
+        }
+        const data = await response.json();
+        setAppliedPrograms(data as AidProgram[]);
+      } catch (err: any) {
+        console.error("Error fetching applied aid programs:", err);
+        setFetchError(
+          err.message ||
+            "Failed to load applied aid programs. Please try again later."
+        );
+      }
+      setIsLoading(false);
+    };
+
+    fetchData();
+  }, []);
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="mb-8">
@@ -276,74 +325,40 @@ export default function WalletPage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {[
-                    {
-                      id: "1",
-                      color: "bg-blue-500",
-                      program: "Rohingya Social Aid Program",
-                      amount: "$51",
-                      status: { label: "Approved", color: "bg-green-100 text-green-800 border-green-200" },
-                      date: "20 Aug 2025",
-                      img: "https://placehold.co/32x32",
-                    },
-                    {
-                      id: "2",
-                      color: "bg-green-500",
-                      program: "Cash Assistance for Refugees",
-                      amount: "$45",
-                      status: { label: "On Progress", color: "bg-amber-100 text-amber-800 border-amber-200" },
-                      date: "29 Jul 2025",
-                      img: "https://placehold.co/32x32",
-                    },
-                    {
-                      id: "3",
-                      color: "bg-yellow-500",
-                      program: "Livelihood help for Refugee",
-                      amount: "$39",
-                      status: { label: "Declined", color: "bg-red-100 text-red-800 border-red-200" },
-                      date: "05 Jul 2025",
-                      img: "https://placehold.co/32x32",
-                    },
-                    {
-                      id: "4",
-                      color: "bg-blue-500",
-                      program: "Safe Shelters for Refugees",
-                      amount: "$26",
-                      status: { label: "On Progress", color: "bg-amber-100 text-amber-800 border-amber-200" },
-                      date: "12 Jun 2025",
-                      img: "https://placehold.co/32x32",
-                    },
-                  ].map((row) => (
+                  {appliedPrograms.map((row: AidProgram) => (
                     <tr
                       key={row.id}
                       className="cursor-pointer hover:bg-gray-50 transition"
                     >
                       <td className="font-medium">
-                        <div className="flex items-center gap-3">
-                          <div className={`h-8 w-8 rounded-full ${row.color} flex items-center justify-center overflow-hidden`}>
+                        <div className="flex items-center gap-3 my-2 ml-2">
+                          <div
+                            className={`h-8 w-8 rounded-full flex items-center justify-center overflow-hidden bg-gray-200`}
+                          >
                             <Image
-                              src={row.img}
-                              alt={row.program}
+                              src={row.img || "https://via.placeholder.com/32"}
+                              alt={row.name || "Program image"}
                               width={32}
                               height={32}
-                              className="rounded-full"
+                              className="rounded-full object-cover"
                             />
                           </div>
-                          <span>{row.program}</span>
+                          <span>{row.name}</span>
                         </div>
                       </td>
                       <td className="font-bold text-blue-600">
-                        {row.amount} <span className="text-xs font-normal">CHEQ</span>
+                        {row.nominal ?? "N/A"}{" "}
+                        <span className="text-xs font-normal">CHEQ</span>
                       </td>
                       <td>
                         <Badge
                           variant="outline"
-                          className={row.status.color}
+                          className={row.application_status}
                         >
-                          {row.status.label}
+                          {row.application_status || "Unknown"}
                         </Badge>
                       </td>
-                      <td>{row.date}</td>
+                      <td>{new Date(row.created_at).toLocaleDateString()}</td>
                       <td>
                         <a
                           href={`/dashboard/wallet/${row.id}`}

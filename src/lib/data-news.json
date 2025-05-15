@@ -1,0 +1,44 @@
+[
+  {
+    "id": 1,
+    "image": "/image-news-1.png",
+    "title": "Post-Earthquake Myanmar: The Need for Emergency Resources ",
+    "description": ""
+  },
+  {
+    "id": 2,
+    "image": "/image-news-2.png",
+    "title": "Drones enable rapid detection of forest fires in Bosnia and Herzegovina",
+    "description": "In Herzegovina-Neretva Canton, forest fires seriously threaten nature, property, and human lives every year. We introduced new technology that will transform how emergency services respond to fire..."
+  },
+  {
+    "id": 3,
+    "image": "/image-news-3.png",
+    "title": "Alerts! How Our Early Warning System Keeps Communities Safe and Ready",
+    "description": "Sitting on her sofa, watching updates on her television, Ma. Lourdes D. Ramas keeps her Go Bag ready, waiting for any new alerts on her phone. Though her house stands just a few metres from a river basin in Surigao del Sur, she remains calm..."
+  },
+  {
+    "id": 4,
+    "image": "/image-news-4.png",
+    "title": "Urgent Appeal for the Immediate Release of Abdulrahman Yusuf Al-Qaradawi",
+    "description": "We, the undersigned organizations, write to express our deep concern and call for your urgent intervention regarding the ongoing detention of renowned poet and democratic advocate Abdulrahman Yusuf Al-Qaradawi..."
+  },
+  {
+    "id": 5,
+    "image": "/image-news-5.png",
+    "title": "Global Hunger Index: Identifying links between gender inequality and hunger",
+    "description": "The Global Hunger Index tracks the state of hunger worldwide. It spotlights those regions and countries where action to address hunger is most urgently needed. "
+  },
+  {
+    "id": 6,
+    "image": "/image-news-6.png",
+    "title": "Strengthening Market Systems in Northwestern Zambia: Study Reveals Lobito Opportunities",
+    "description": "We recently conducted a market systems assessment in collaboration identified significant potential for economic opportunity in Northwestern Zambia's Lobito Corridor."
+  },
+  {
+    "id": 7,
+    "image": "/image-news-7.png",
+    "title": "Suman Recalls the Aftermath of the 2015 Nepal Earthquake",
+    "description": "a huge earthquake struck Nepal, causing enormous damage, injuries, and loss on lives. In order to provide much-needed humanitarian help, together with local volunteers who joined our team."
+  }
+]

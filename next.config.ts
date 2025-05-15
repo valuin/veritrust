@@ -7,6 +7,7 @@ const nextConfig: NextConfig = {
       new URL("https://flagsapi.com/**/**/*.png"),
       new URL("https://placehold.co/**"),
       new URL("https://cdn.rri.co.id/**"),
+      new URL("https://upload.wikimedia.org/**"),
     ],
   },
 };

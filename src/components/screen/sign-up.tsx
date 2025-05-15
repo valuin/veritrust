@@ -94,7 +94,7 @@ export default function SignUp() {
   };
 
   return (
-    <div className="bg-white flex flex-col md:flex-row justify-center w-full min-h-screen">
+    <div className="bg-white flex flex-col md:flex-row justify-center w-full min-h-screen px-10 gap-10">
       <div className="w-full max-w-lg mx-auto px-4 py-8 flex flex-col justify-center relative">
         <div className="font-bold text-black text-3xl md:text-4xl leading-tight mb-2">
           Create An Account
@@ -235,7 +235,7 @@ export default function SignUp() {
             htmlFor="privacy"
             className="text-[#b5b5b5] text-xs cursor-pointer"
           >
-            You agree to our friendly
+            You agree to our friendly{" "}
             <span className="underline">privacy policy</span>
           </label>
         </div>
@@ -253,8 +253,8 @@ export default function SignUp() {
           </Button>
         </div>
       </div>
-      <div className="hidden md:block bg-white w-full max-w-[900px] h-[928px] relative">
-        <div className="absolute w-full h-full bg-[url(/signup-veritrust.png)] bg-cover bg-center">
+      <div className="hidden md:block bg-white w-full max-w-[800px] h-[928px] relative">
+        <div className="absolute w-full h-full bg-[url(/signup-veritrust.png)] bg-cover bg-center rounded-2xl">
           <div className="absolute w-[80%] bottom-10 left-10 font-bold text-white text-lg md:text-2xl lg:text-[26px] leading-normal">
             Social Aid Distributed Through Traditional Methods Never Reaches Its
             Intended Recipients Due To Middlemen, And Logistical Challenges.

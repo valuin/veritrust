@@ -213,7 +213,7 @@ export const LandingPage = (): JSX.Element => {
           </div>
         </section>
         {/* Problem Statements */}
-        <section className="mt-16 px-32">
+        <section id="problem-section" className="mt-16 px-32">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {/* Kolom Kiri */}
             <div className="space-y-8 flex flex-col">
@@ -284,7 +284,7 @@ export const LandingPage = (): JSX.Element => {
           </div>
         </section>
         {/* Solution Section */}
-        <section className="mt-16 mx-5 bg-[#0039c7] rounded-[20px] px-16 py-12 relative">
+        <section id="solution-section" className="mt-16 mx-5 bg-[#0039c7] rounded-[20px] px-16 py-12 relative">
           <div className="flex items-center mb-8">
             <div className="w-[41px] h-[41px] bg-white rounded-[20.5px] flex items-center justify-center">
               <img
@@ -355,7 +355,7 @@ export const LandingPage = (): JSX.Element => {
         {/* AI Section */}
         <AiSection />
         {/* Technology Section */}
-        <section className="mt-16 mx-5 bg-[#0039c7] rounded-[20px] px-16 py-12 relative">
+        <section id="technology-section" className="mt-16 mx-5 bg-[#0039c7] rounded-[20px] px-16 py-12 relative">
           <div className="flex items-center mb-8">
             <div className="w-[41px] h-[41px] bg-[#d4e0ff] rounded-[20.5px] flex items-center justify-center">
               <img
@@ -409,7 +409,7 @@ export const LandingPage = (): JSX.Element => {
           </div>
         </section>
         {/* FAQ Section */}
-        <section className="mt-16 px-16">
+        <section id="contact-us-section" className="mt-16 px-16">
           <h2 className="text-center font-semibold text-black text-5xl leading-[57.6px] font-['Geist',Helvetica] mb-16">
             Frequently Asked Question
           </h2>

@@ -50,7 +50,7 @@ export default function HowItWorks() {
   const [activeStep, setActiveStep] = useState(1);
 
   return (
-    <section className="mt-16 px-32">
+    <section id="how-it-works-section" className="mt-16 px-32">
       <div className="flex items-center mb-8">
         <div className="w-[41px] h-[41px] bg-[#d4e0ff] rounded-[20.5px] flex items-center justify-center">
           <img

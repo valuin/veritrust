@@ -22,19 +22,18 @@ export default function Page() {
     <div className="w-full">
       <div className="container mx-auto py-8">
         {/* Featured Article */}
-        <div className="flex lg:flex-row flex-col gap-10 mb-14">
+        <div className="flex pl-4 lg:flex-row flex-col gap-10 mb-14">
           {/* main news */}
           {featuredArticle && (
-            <div className="w-full lg:w-3/5">
+            <div className="w-full lg:w-3/5 relative h-[400px] lg:h-[600px]">
               <Image
                 src={featuredArticle.image}
                 alt={featuredArticle.title}
-                width={777}
-                height={600}
-                className="rounded-lg object-cover w-full"
+                fill
+                className="rounded-lg object-cover"
                 priority
               />
-              <h1 className="text-3xl md:text-4xl font-bold tracking-tight mt-5">
+              <h1 className="text-3xl md:text-4xl font-bold tracking-tight mt-5 absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/70 to-transparent text-white rounded-b-lg">
                 {featuredArticle.title}
               </h1>
             </div>

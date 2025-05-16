@@ -170,4 +170,17 @@
   .spinner {
     @apply motion-rotate-loop-[1turn]/reset motion-ease-linear  motion-duration-1500;
   }
+
+  @keyframes orbit {
+    0% {
+      transform: rotate(0deg) translateX(6rem) rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg) translateX(6rem) rotate(-360deg);
+    }
+  }
+
+  .animate-orbit {
+    animation: orbit 8s linear infinite; /* Adjust duration as needed */
+  }
 }

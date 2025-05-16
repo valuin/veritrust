@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button"; 
+import { Button } from "@/components/ui/button";
 import {
   DialogContent,
   DialogDescription,
@@ -6,9 +6,9 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { useUserStore } from "@/store/useUser"; 
+import { useUserStore } from "@/store/useUser";
 import Image from "next/image";
-import { useState, useEffect } from "react"; 
+import { useState, useEffect } from "react";
 import { WorkflowStep } from "./workflow-step";
 
 export type SelectedAidForDisplay = {
@@ -25,7 +25,7 @@ type WorkflowStepData = {
   id: string;
   title: string;
   description: string;
-  progress: number; 
+  progress: number;
   isComplete: boolean;
 };
 
@@ -34,7 +34,7 @@ const dummyWorkflowSteps: WorkflowStepData[] = [
     id: "doc-analysis",
     title: "Analyzing user document",
     description: "Extract and analyze the data",
-    progress: 0, 
+    progress: 0,
     isComplete: false,
   },
   {
@@ -84,7 +84,23 @@ export function AnalyzingModalContent({
   const [applicationResponse, setApplicationResponse] = useState<any | null>(
     null
   );
-  
+  const [ellipsis, setEllipsis] = useState("");
+
+  useEffect(() => {
+    console.log("isLoading changed:", !successMessage);
+    if (!successMessage && !error) {
+      const interval = setInterval(() => {
+        setEllipsis((prev) => {
+          console.log("Updating ellipsis:", prev.length < 3 ? prev + "." : "");
+          return prev.length < 3 ? prev + "." : "";
+        });
+      }, 300); // Adjust interval for desired speed
+      return () => clearInterval(interval);
+    } else {
+      setEllipsis(""); // Reset ellipsis when not loading
+    }
+  }, [!successMessage]);
+
   const updateWorkflowStep = (
     id: string,
     progress: number,
@@ -121,7 +137,7 @@ export function AnalyzingModalContent({
       job: userProfile.job,
       family_number: userProfile.family_number,
       backgroundStory: userProfile.background_story,
-      category: userProfile.category ? userProfile.category[0] : undefined, 
+      category: userProfile.category ? userProfile.category[0] : undefined,
     };
 
     try {
@@ -162,9 +178,9 @@ export function AnalyzingModalContent({
 
       updateWorkflowStep("send-data", 50, false);
       const formDataApply = new FormData();
-      formDataApply.append("userId", userId); 
+      formDataApply.append("userId", userId);
       formDataApply.append("aidProgramId", programId);
-      formDataApply.append("profileData", JSON.stringify(profileDataForAPI)); 
+      formDataApply.append("profileData", JSON.stringify(profileDataForAPI));
       if (profileDataForAPI.category)
         formDataApply.append("category", profileDataForAPI.category);
       console.warn(
@@ -218,7 +234,7 @@ export function AnalyzingModalContent({
     userProfile,
     isUserLoading,
     programId,
-  ]); 
+  ]);
 
   if (isUserLoading) {
     return (
@@ -257,7 +273,7 @@ export function AnalyzingModalContent({
             <div className="w-12 h-12 flex-shrink-0 bg-gray-200 rounded-lg flex items-center justify-center mr-3">
               <Image
                 src={selectedAid.logoSrc}
-                alt={`${selectedAid.organization} Logo`}
+                alt={`${selectedAid.organization}`}
                 width={48}
                 height={48}
                 className="object-contain"
@@ -322,11 +338,22 @@ export function AnalyzingModalContent({
                 <div className="absolute border border-blue-300 rounded-full w-48 h-48 opacity-50 animate-pulse"></div>
                 <div className="absolute border border-blue-300 rounded-full w-32 h-32 opacity-50 animate-pulse delay-150"></div>
                 <div className="absolute border border-blue-300 rounded-full w-16 h-16 opacity-50 animate-pulse delay-300"></div>
-                <div className="absolute -top-4 -left-4 w-8 h-8 bg-blue-600 rounded-full opacity-80"></div>
-                <div className="absolute w-6 h-6 bg-blue-600 rounded-full opacity-80"></div>
-                <div className="absolute -bottom-4 -right-4 w-8 h-8 bg-blue-600 rounded-full opacity-80"></div>
+                <Image
+                  src="/planet.png"
+                  alt="Planet"
+                  width={128}
+                  height={128}
+                  className={"absolute spinner"}
+                />
               </div>
             ) : null}
+            {!successMessage && !error && (
+              <div className="text-center mt-4">
+                <p className="text-lg font-semibold text-gray-800">
+                  Analyzing Your Application{ellipsis}
+                </p>
+              </div>
+            )}
           </div>
         </div>
       </div>

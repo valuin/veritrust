@@ -13,6 +13,31 @@ const navLinks: string[] = [
 
 export function Header() {
   const router = useRouter();
+
+  const scrollToSection = (sectionId: string) => {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
+  const getSectionId = (link: string): string => {
+    switch (link) {
+      case "Problem":
+        return "problem-section";
+      case "Solution":
+        return "solution-section";
+      case "How it works?":
+        return "how-it-works-section";
+      case "Technology":
+        return "technology-section";
+      case "Contact Us":
+        return "contact-us-section";
+      default:
+        return "";
+    }
+  };
+
   return (
     <header className="flex bg-white flex-col lg:flex-row lg:justify-between lg:items-center px-4 lg:px-16 py-6 md:py-10 gap-4 md:gap-0">
       <div className="flex items-center" onClick={() => router.push("/dashboard")}>
@@ -34,6 +59,7 @@ export function Header() {
               key={index}
               variant="link"
               className="font-['Geist',Helvetica] font-medium text-black text-base"
+              onClick={() => scrollToSection(getSectionId(link))}
             >
               {link}
             </Button>
@@ -62,6 +88,7 @@ export function Header() {
             key={index}
             variant="link"
             className="font-['Geist',Helvetica] font-medium text-black text-base px-2"
+            onClick={() => scrollToSection(getSectionId(link))}
           >
             {link}
           </Button>
